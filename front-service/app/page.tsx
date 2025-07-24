@@ -3,11 +3,11 @@
 import {useTransform} from "framer-motion";
 import {motion, useScroll} from "framer-motion";
 import {useRef} from "react";
-import {staggerContainer, fadeInUp, slideUp} from '@/utils/scrollAnimations'
+import {staggerContainer, slideUp} from '@/utils/scrollAnimations'
 import {StaggeredText} from "@/components/animations/StaggeredText";
 import {AnimateOnScroll} from "@/components/animations/AnimateOnScroll";
-import {ParallaxElement} from "@/components/animations/ParallaxElement";
 import {CheckCircle, Crown, Settings, Shield, ShieldAlert, ShieldCheck} from "lucide-react";
+import {NavBar} from "@/components/shared/Navbar";
 
 export default function Home() {
     const ref = useRef<HTMLDivElement>(null)
@@ -98,6 +98,7 @@ export default function Home() {
 
     return (
         <>
+            <NavBar/>
             <motion.section
                 ref={ref}
                 style={{ y, opacity }}
@@ -112,7 +113,7 @@ export default function Home() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1, duration: 0.8 }}
-                        className="text-xl text-gray-600"
+                        className="text-xl text-white-600"
                     >
                         Protéger votre entreprise des cyberattaques avant qu&apos;il ne soit trop tard.
                     </motion.p>

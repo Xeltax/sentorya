@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useScrollDirection } from '@/hooks/useScrollDirection'
 import { useEffect, useState } from 'react'
+import {Icon, User} from "lucide-react";
 
 export const NavBar = () => {
     const { scrollY } = useScroll()
@@ -37,27 +38,41 @@ export const NavBar = () => {
                 <div className="flex items-center justify-between">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="text-2xl font-bold"
+                        animate={{ opacity: 1, x: 0, color: isScrolled ? 'black' : 'white' }}
+                        className="text-orange-50 text-2xl font-bold"
                     >
                         Sentorya
                     </motion.div>
 
                     <motion.div
                         animate={{ scale: isScrolled ? 0.9 : 1 }}
-                        className="flex space-x-6"
+                        className="flex space-x-6 text-white-50"
                     >
                         {['Accueil', 'À propos', 'Services', 'Contact'].map((item) => (
                             <motion.a
                                 key={item}
                                 href={`#${item.toLowerCase()}`}
+                                animate={{ opacity: 1, x: 0, color: isScrolled ? 'black' : 'white', transition: { duration: 100 } }}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                className="text-gray-700 hover:text-blue-500 transition-colors"
+                                className="text-white-100 hover:text-blue-500 transition-colors"
                             >
                                 {item}
                             </motion.a>
                         ))}
+
+                        <motion.a
+                            href={`/login`}
+                            animate={{ opacity: 1, x: 0, color: isScrolled ? 'black' : 'white', transition: { duration: 100 } }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="text-white-100 hover:text-blue-500 transition-colors"
+                        >
+                            <div className={"flex items-center justify-center gap-1"}>
+                                <User />
+                                Connexion
+                            </div>
+                        </motion.a>
                     </motion.div>
                 </div>
             </div>
