@@ -4,6 +4,7 @@ import { config } from './config';
 import logger from './utils/logger';
 import { AppError } from './utils/errors';
 import UserRoutes from "./routes/UserRoutes";
+import AuthRoutes from "./routes/AuthRoutes";
 
 const app: Application = express();
 
@@ -11,12 +12,23 @@ const app: Application = express();
 app.use(helmet());
 
 
+// CORS middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+    res.header('Access-Control-Allow-Origin', '*'); // Adjust this to your needs
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') {
+        return res.status(204).end();
+    }
+    next();
+});
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Routes
 app.use('/user', UserRoutes);
+app.use('/auth', AuthRoutes);
 
 // 404 handler
 app.all('*', (req: Request, res: Response, next: NextFunction) => {

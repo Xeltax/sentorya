@@ -32,3 +32,26 @@
 {"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-29T17:49:48.955Z"}
 {"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-29T17:50:22.369Z"}
 {"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-29T17:50:22.372Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T12:19:12.475Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T12:19:12.478Z"}
+{"ip":"::1","level":"error","message":"Error: Can't find /auth/login on this server!","method":"POST","service":"api-gateway","stack":"Error: Can't find /auth/login on this server!\n    at C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\src\\app.ts:25:10\n    at Layer.handle [as handle_request] (C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\node_modules\\express\\lib\\router\\route.js:149:13)\n    at next (C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\Clément\\Documents\\GitHub\\sentorya\\back\\node_modules\\express\\lib\\router\\route.js:145:7)","timestamp":"2025-07-31T12:22:05.814Z","url":"/auth/login"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T12:23:39.256Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T12:23:39.259Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T12:24:24.326Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T12:24:24.329Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T12:25:26.889Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T12:25:26.893Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T12:26:03.263Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T12:26:03.267Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T12:39:16.504Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T12:39:16.508Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T12:39:48.867Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T12:39:48.871Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T14:32:19.329Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T14:32:19.332Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T14:33:12.412Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T14:33:12.416Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T14:33:18.077Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T14:33:18.082Z"}
+{"level":"info","message":"🚀 API Gateway server running on port 5000","service":"api-gateway","timestamp":"2025-07-31T14:40:28.860Z"}
+{"level":"info","message":"Environment: development","service":"api-gateway","timestamp":"2025-07-31T14:40:28.863Z"}

@@ -1,42 +1,33 @@
 import httpClient from './httpClient.service';
 import { config } from '../config';
-import { AuthTokens, User } from '../types';
+import { User } from '../types';
+import {UserRepository} from "../repositories/UserRepository";
+import {compare} from "bcrypt";
+import * as jwt from "jsonwebtoken";
 
-class AuthService {
-    private baseUrl = config.services.auth;
+export class AuthService {
+    private userRepository: UserRepository = new UserRepository();
 
-    async validateToken(token: string): Promise<User> {
-        const response = await httpClient.post(`${this.baseUrl}/auth/validate`, {
-            token,
+    async login(credentials : {email : string, password : string}): Promise<{ user: User; token: string; }> {
+        const user = await this.userRepository.getByEmail(credentials.email);
+        if (!user) {
+            throw new Error("User does not exist");
+        }
+
+        const isPasswordValid = await compare(credentials.password, user.password);
+        if (!isPasswordValid) {
+            throw new Error("Invalid password");
+        }
+        const token = jwt.sign({
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            userId: user.id,
+            // @ts-ignore
+        }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRES_IN,
         });
-        return response.data.data;
-    }
 
-    async login(email: string, password: string): Promise<{ user: User; tokens: AuthTokens }> {
-        const response = await httpClient.post(`${this.baseUrl}/auth/login`, {
-            email,
-            password,
-        });
-        return response.data.data;
-    }
-
-    async register(userData: { email: string; password: string; name: string }): Promise<{ user: User; tokens: AuthTokens }> {
-        const response = await httpClient.post(`${this.baseUrl}/auth/register`, userData);
-        return response.data.data;
-    }
-
-    async refreshToken(refreshToken: string): Promise<AuthTokens> {
-        const response = await httpClient.post(`${this.baseUrl}/auth/refresh`, {
-            refreshToken,
-        });
-        return response.data.data;
-    }
-
-    async logout(refreshToken: string): Promise<void> {
-        await httpClient.post(`${this.baseUrl}/auth/logout`, {
-            refreshToken,
-        });
+        return { user, token };
     }
 }
-
-export default new AuthService();

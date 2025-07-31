@@ -1,8 +1,43 @@
 "use client";
 
+import Client from "@/utils/client";
 import {motion} from "framer-motion";
+import {useState} from "react";
+import {ROUTES} from "@/utils/routes";
+import {setCookie} from "cookies-next";
 
 export default function Page() {
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
+    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        // Handle form submission logic here
+        const credentials = {
+            email: email,
+            password: password
+        }
+
+        Client.post(ROUTES.BACK.AUTH.LOGIN, credentials).then((response) => {
+            console.log(response);
+            if (response.status === 200 && response.data.token) {
+                const token = response.data.token;
+                localStorage.setItem("JWT", token);
+                setCookie("JWT", token, {
+                    maxAge: 60 * 60 * 24 * 7, // 7 days
+                })
+                if (response.data.user.role === "ADMIN") {
+                    window.location.href = "/admin"; // Change this to your desired route
+                } else {
+                    window.location.href = "/dashboard"; // Change this to your desired route
+                }
+            } else {
+                // Handle login failure (e.g., show an error message)
+                alert("Login failed: " + response.data.message);
+            }
+        })
+    };
+
     return (
         <div className={"grid grid-cols-2 grid-rows-1 gap-4"}>
             <section
@@ -11,7 +46,7 @@ export default function Page() {
                 <div className={"flex flex-col h-screen text-black mx-32 justify-center"}>
                     <h1 className={"font-black text-4xl text-center py-8"}>Connexion</h1>
 
-                    <form>
+                    <form onSubmit={onSubmit}>
                         <div className="mb-4">
                             <label htmlFor="email" className="block text-sm font-medium mb-2">Email</label>
                             <input
@@ -19,6 +54,7 @@ export default function Page() {
                                 id="email"
                                 name="email"
                                 required
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {setEmail(event.target.value)}}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
@@ -29,6 +65,7 @@ export default function Page() {
                                 id="password"
                                 name="password"
                                 required
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {setPassword(event.target.value)}}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>

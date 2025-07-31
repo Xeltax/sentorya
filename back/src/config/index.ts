@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const config = {
-    port: process.env.PORT || 500,
+    port: process.env.PORT || 5000,
     jwtSecret: process.env.JWT_SECRET || 'fallback-secret',
     jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
     rateLimit: {
