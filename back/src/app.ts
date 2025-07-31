@@ -1,35 +1,22 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import { config } from './config';
-import { corsMiddleware } from './middleware/cors.middleware';
-import { rateLimitMiddleware } from './middleware/rateLimit.middleware';
-import routes from './routes';
 import logger from './utils/logger';
 import { AppError } from './utils/errors';
+import UserRoutes from "./routes/UserRoutes";
 
 const app: Application = express();
 
 // Security middleware
 app.use(helmet());
-app.use(corsMiddleware);
-app.use(rateLimitMiddleware);
 
-// Logging
-app.use(morgan('combined', {
-    stream: {
-        write: (message: string) => {
-            logger.info(message.trim());
-        },
-    },
-}));
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Routes
-app.use('/api', routes);
+app.use('/user', UserRoutes);
 
 // 404 handler
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
