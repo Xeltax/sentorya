@@ -35,6 +35,10 @@ export default function Page() {
                 // Handle login failure (e.g., show an error message)
                 alert("Login failed: " + response.data.message);
             }
+        }).catch((error) => {
+            console.error("Login error:", error);
+            // Handle error (e.g., show an error message)
+            alert("An error occurred during login. Please try again.");
         })
     };
 
