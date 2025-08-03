@@ -1,6 +1,7 @@
 import { ThemeProvider } from "next-themes";
 import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import {BackOfficeSideBar} from "@/components/shared/BackOfficeSideBar";
+import { Toaster } from "@/components/ui/sonner"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
@@ -15,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                     <SidebarTrigger />
                     {children}
-
+                <Toaster position={"top-center"} />
             </SidebarProvider>
         </ThemeProvider>
     );

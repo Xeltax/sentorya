@@ -22,8 +22,20 @@ export class UserService {
         return await this.userRepository.getByEmail(email);
     }
 
+    async getById(id: string): Promise<User | null> {
+        return await this.userRepository.getById(id);
+    }
+
     async getAllUsers() {
         return await this.userRepository.getAll();
+    }
+
+    async updateUser(user: User, data: Partial<UserDTO>): Promise<User | null> {
+        return await this.userRepository.update(user, data);
+    }
+
+    async deleteUser(id: string): Promise<void> {
+        await this.userRepository.delete(id);
     }
 
     async hashPassword(password: string): Promise<string> {

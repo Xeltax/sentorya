@@ -1,17 +1,13 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import {User} from "@/types/User";
-import {Eye, Pen, Trash} from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import { User } from "@/types/User";
 import UserActionsDatatable from "@/components/shared/UserActionsDatatable";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-
-export const columns: ColumnDef<User>[] = [
+export const columns = (
+    onUserUpdate: (user: User) => void,
+    onUserDelete: (userId: string) => void
+): ColumnDef<User>[] => [
     {
         accessorKey: "email",
         header: "Email",
@@ -27,7 +23,7 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "createdAt",
         header: "Date de création",
-        cell : ({ row }) => {
+        cell: ({ row }) => {
             const date = new Date(row.original.createdAt)
             return (
                 <span>
@@ -48,7 +44,11 @@ export const columns: ColumnDef<User>[] = [
         id: "actions",
         cell: ({ row }) => {
             return (
-                <UserActionsDatatable data={row.original}/>
+                <UserActionsDatatable
+                    data={row.original}
+                    onUserUpdate={onUserUpdate}
+                    onUserDelete={onUserDelete}
+                />
             )
         },
     },
