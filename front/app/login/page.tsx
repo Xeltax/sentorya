@@ -5,6 +5,7 @@ import {motion} from "framer-motion";
 import {useState} from "react";
 import {ROUTES} from "@/utils/routes";
 import {setCookie} from "cookies-next";
+import {toast} from "sonner";
 
 export default function Page() {
     const [email, setEmail] = useState<string>("");
@@ -36,9 +37,8 @@ export default function Page() {
                 alert("Login failed: " + response.data.message);
             }
         }).catch((error) => {
-            console.error("Login error:", error);
-            // Handle error (e.g., show an error message)
-            alert("An error occurred during login. Please try again.");
+            console.log(error);
+            toast.error("Connexion échoué : " + error.response.data.message);
         })
     };
 

@@ -1,7 +1,7 @@
 import {UserRepository} from "../repositories/UserRepository";
 import {UserDTO} from "../DTO/UserDTO";
-import {User} from "../types";
 import {hash, compare} from "bcrypt";
+import {User} from "../models/User";
 
 export class UserService {
     private userRepository: UserRepository = new UserRepository();

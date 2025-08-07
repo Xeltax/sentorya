@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { User } from "@/types/User";
-import { DataTable } from "@/app/admin/users/data-table";
 import {columns} from "@/app/admin/users/columns";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
@@ -14,6 +13,7 @@ import Client from "@/utils/client";
 import {ROUTES} from "@/utils/routes";
 import {toast} from "sonner";
 import {useForm} from "react-hook-form";
+import {DataTableWithSearch} from "@/components/Datatable/DatatableWithSearch";
 
 interface UsersDataTableProps {
     initialUsers: User[];
@@ -22,6 +22,8 @@ interface UsersDataTableProps {
 type UserFormData = {
     email: string;
     name: string;
+    organizationName?: string;
+    phoneNumber?: string;
     password?: string;
     role: string;
 }
@@ -29,6 +31,8 @@ type UserFormData = {
 const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
     const [users, setUsers] = useState<User[]>(initialUsers);
     const [openDialog, setOpenDialog] = useState(false);
+    const [confirmCreate, setConfirmCreate] = useState(false);
+    const [formData, setFormData] = useState<UserFormData>()
     const form = useForm<UserFormData>();
 
     const handleUserUpdate = (updatedUser: User) => {
@@ -46,6 +50,20 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
     };
 
     const onSubmit = async (formData: UserFormData) => {
+        if (!formData.role) {
+            formData.role = "USER";
+        }
+        setFormData(formData);
+
+        if (formData.role === "ADMIN" && !confirmCreate) {
+            setConfirmCreate(true);
+        } else {
+            await createUser(formData);
+            setConfirmCreate(false);
+        }
+    };
+
+    const createUser = async (formData: UserFormData) => {
         try {
             const response = await Client.post(ROUTES.BACK.USER.CRUD, formData);
 
@@ -54,12 +72,13 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
             setUsers(prevUsers => [...prevUsers, response.data]);
             form.reset();
             toast.success("Créatoion de l'utilisateur réussie !");
+            setConfirmCreate(false);
 
         } catch (error) {
             console.error("Error updating user:", error);
             toast.error("Echec lors de la création de l'utilisateur. Veuillez réessayer.")
         }
-    };
+    }
 
     const generateRandomPassword = () => {
         const length = 12;
@@ -72,6 +91,8 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
         return password;
     }
 
+    const tableColumns = columns(handleUserUpdate, handleUserDelete)
+
     return (
         <>
             <Card className="mb-6 p-6">
@@ -83,10 +104,8 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
                     Ajouter un utilisateur
                 </Button>
             </Card>
-            <DataTable
-                columns={columns(handleUserUpdate, handleUserDelete)}
-                data={users}
-            />
+
+            <DataTableWithSearch columns={tableColumns} data={users}/>
             {openDialog && (
                 <Dialog
                     open={openDialog}
@@ -128,6 +147,34 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
                                         />
                                         <FormField
                                             control={form.control}
+                                            name="organizationName"
+                                            defaultValue=""
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Entreprise</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Nom de l'entreprise" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="phoneNumber"
+                                            defaultValue=""
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Numéro de téléphone</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Numéro de tel" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
                                             name="password"
                                             render={({ field }) => (
                                                 <FormItem>
@@ -155,21 +202,20 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
                                         <FormField
                                             control={form.control}
                                             name="role"
-                                            defaultValue=""
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Role</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <FormControl>
-                                                            <SelectTrigger className="w-full">
-                                                                <SelectValue placeholder="Role" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            <SelectItem value="USER">USER</SelectItem>
-                                                            <SelectItem value="ADMIN">ADMIN</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
+                                                        <Select onValueChange={field.onChange} defaultValue={"USER"}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="w-full">
+                                                                    <SelectValue placeholder="Role"/>
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                <SelectItem value="USER">USER</SelectItem>
+                                                                <SelectItem value="ADMIN">ADMIN</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
@@ -181,6 +227,30 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
                                 </Form>
                             </DialogDescription>
                         </DialogHeader>
+                    </DialogContent>
+                </Dialog>
+            )}
+
+            {confirmCreate && (
+                <Dialog
+                    open={confirmCreate}
+                    onOpenChange={(open) => setConfirmCreate(open)}
+                >
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Créer un compte administrateur ?</DialogTitle>
+                            <DialogDescription>
+                                Êtes-vous sûr de vouloir créer un compte administrateur ?
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex justify-end gap-2 mt-4">
+                            <Button variant="outline" onClick={() => setOpenDialog(false)}>
+                                Annuler
+                            </Button>
+                            <Button variant="secondary" onClick={() => createUser(formData!)}>
+                                Confirmer la création
+                            </Button>
+                        </div>
                     </DialogContent>
                 </Dialog>
             )}

@@ -17,6 +17,14 @@ export const columns = (
         header: "Nom",
     },
     {
+        accessorKey: "organizationName",
+        header: "Entreprise",
+    },
+    {
+        accessorKey: "phoneNumber",
+        header: "Numéro de téléphone",
+    },
+    {
         accessorKey: "role",
         header: "Role",
     },
@@ -25,6 +33,29 @@ export const columns = (
         header: "Date de création",
         cell: ({ row }) => {
             const date = new Date(row.original.createdAt)
+            return (
+                <span>
+                    {date.toLocaleDateString("fr-FR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                    })}{" "}
+                    {date.toLocaleTimeString("fr-FR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })}
+                </span>
+            )
+        }
+    },
+    {
+        accessorKey: "lastLogin",
+        header: "Date de dernière connexion",
+        cell: ({ row }) => {
+            if (!row.original.lastLogin) {
+                return <span>Aucune connexion</span>
+            }
+            const date = new Date(row.original.lastLogin)
             return (
                 <span>
                     {date.toLocaleDateString("fr-FR", {

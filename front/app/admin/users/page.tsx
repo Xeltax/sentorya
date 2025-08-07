@@ -13,7 +13,6 @@ export default async function UsersPage() {
         (res) => res.data
     );
 
-    console.log("Fetched users data:", data);
     const users: User[] = await data;
 
     return (

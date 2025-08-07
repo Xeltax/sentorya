@@ -1,5 +1,4 @@
 import {User} from "../models/User";
-import {User as UserTypes} from "../types";
 import prisma from "../prisma";
 import {UserDTO} from "../DTO/UserDTO";
 
@@ -26,7 +25,7 @@ export class UserRepository {
         });
     }
 
-    async update(user: UserTypes, data: Partial<UserDTO>): Promise<User | null> {
+    async update(user: User, data: Partial<UserDTO>): Promise<User | null> {
         const email = user.email;
         return prisma.user.update({
             where: {email},

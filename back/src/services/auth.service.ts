@@ -11,12 +11,20 @@ export class AuthService {
     async login(credentials : {email : string, password : string}): Promise<{ user: User; token: string; }> {
         const user = await this.userRepository.getByEmail(credentials.email);
         if (!user) {
-            throw new Error("User does not exist");
+            throw new Error("Compte non trouvé");
         }
+
+        if (user.firstConnection) {
+            user.firstConnection = false
+        }
+
+        user.lastLogin = new Date();
+
+        await this.userRepository.update(user, user);
 
         const isPasswordValid = await compare(credentials.password, user.password);
         if (!isPasswordValid) {
-            throw new Error("Invalid password");
+            throw new Error("Mot de passe incorrect");
         }
         const token = jwt.sign({
             email: user.email,

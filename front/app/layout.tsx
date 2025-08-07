@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import {SmoothScroll} from "@/components/shared/SmoothScroll";
+import {Toaster} from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
           <SmoothScroll>
             {children}
           </SmoothScroll>
+          <Toaster position={"top-center"} />
       </body>
     </html>
   );

@@ -22,6 +22,8 @@ type UserFormData = {
     id?: string
     email: string;
     name: string;
+    organizationName?: string;
+    phoneNumber?: string;
     role: string;
 }
 
@@ -39,6 +41,8 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
         defaultValues: {
             email: data.email,
             name: data.name,
+            organizationName: data.organizationName || "",
+            phoneNumber: data.phoneNumber || "",
             role: data.role,
         },
     });
@@ -53,6 +57,8 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
                 ...data,
                 email: formData.email,
                 name: formData.name,
+                organizationName: formData.organizationName || data.organizationName,
+                phoneNumber: formData.phoneNumber || data.phoneNumber,
                 role: formData.role as "user" | "admin",
             };
 
@@ -174,6 +180,34 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
                                                     <FormLabel>Nom</FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Nom complet" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="organizationName"
+                                            defaultValue=""
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Entreprise</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Nom de l'entreprise" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="phoneNumber"
+                                            defaultValue=""
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Numéro de téléphone</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Numéro de tel" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

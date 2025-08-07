@@ -12,13 +12,27 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
+  organizationName String?
+  phoneNumber String?
   password  String
+  firstConnection Boolean @default(true)
   role      Role     @default(USER)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+  lastLogin DateTime?
   updatedAt DateTime @updatedAt
+  campaigns Campaign[] @relation("UserCampaigns")
 
   @@map("users")
+}
+
+model Campaign {
+    id          String   @id @default(cuid())
+    name        String
+    campaignId  String @unique
+    users       User[] @relation("UserCampaigns")
+
+    @@map("campaigns")
 }
 
 enum Role {
