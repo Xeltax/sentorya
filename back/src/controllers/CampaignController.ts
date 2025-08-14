@@ -5,17 +5,20 @@ const campaignService = new CampaignService();
 
 export class CampaignController {
 
-    async createCampaign(req: Request, res : Response) {
+    static async createCampaign(req: Request, res : Response) {
         try {
             const { name, campaignId } = req.body;
-            const newCampaign = await campaignService.createCampaign(name, campaignId);
+            if (!name || !campaignId) {
+                return res.status(400).json({ message: "Name and campaignId are required" });
+            }
+            const newCampaign = await campaignService.createCampaign({ name, campaignId });
             res.status(201).json(newCampaign);
-        } catch (error) {
+        } catch (error : any) {
             res.status(500).json({ error: error.message });
         }
     }
 
-    async getCampaignById(req: Request, res : Response) {
+    static async getCampaignById(req: Request, res : Response) {
         try {
             const id = req.params.id;
             const campaign = await campaignService.getById(id);
@@ -29,7 +32,7 @@ export class CampaignController {
         }
     }
 
-    async updateCampaign(req: Request, res : Response) {
+    static async updateCampaign(req: Request, res : Response) {
         try {
             const campaignId = req.params.id;
             const campaign = await campaignService.getById(campaignId);
@@ -47,7 +50,7 @@ export class CampaignController {
         }
     }
 
-    async deleteCampaign(req: Request, res : Response) {
+    static async deleteCampaign(req: Request, res : Response) {
         try {
             const campaignId = req.params.id;
             await campaignService.deleteCampaign(campaignId);
@@ -57,7 +60,7 @@ export class CampaignController {
         }
     }
 
-    async addUserToCampaign(req: Request, res : Response) {
+    static async addUserToCampaign(req: Request, res : Response) {
         try {
             const { campaignId, userId } = req.body;
             const updatedCampaign = await campaignService.addUserToCampaign(campaignId, userId);
@@ -67,7 +70,7 @@ export class CampaignController {
         }
     }
 
-    async removeUserFromCampaign(req: Request, res : Response) {
+    static async removeUserFromCampaign(req: Request, res : Response) {
         try {
             const { campaignId, userId } = req.body;
             const updatedCampaign = await campaignService.removeUserFromCampaign(campaignId, userId);
@@ -77,7 +80,7 @@ export class CampaignController {
         }
     }
 
-    async getCampaignByCampaignId(req: Request, res : Response) {
+    static async getCampaignByCampaignId(req: Request, res : Response) {
         try {
             const campaignId = req.params.campaignId;
             const campaign = await campaignService.getByCampaignId(campaignId);
@@ -91,7 +94,7 @@ export class CampaignController {
         }
     }
 
-    async getAllCampaigns(req: Request, res : Response) {
+    static async getAllCampaigns(req: Request, res : Response) {
         try {
             const campaigns = await campaignService.getAllCampaign();
             res.status(200).json(campaigns);

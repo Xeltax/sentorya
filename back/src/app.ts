@@ -5,6 +5,7 @@ import logger from './utils/logger';
 import { AppError } from './utils/errors';
 import UserRoutes from "./routes/UserRoutes";
 import AuthRoutes from "./routes/AuthRoutes";
+import CampainRoutes from "./routes/CampaignRoutes";
 
 const app: Application = express();
 
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Routes
 app.use('/user', UserRoutes);
 app.use('/auth', AuthRoutes);
+app.use('/campaign', CampainRoutes);
 
 // 404 handler
 app.all('*', (req: Request, res: Response, next: NextFunction) => {

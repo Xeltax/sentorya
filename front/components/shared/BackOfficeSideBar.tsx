@@ -27,7 +27,7 @@ const items = [
     },
     {
         title: "Campagnes",
-        url: "#",
+        url: "/admin/campains",
         icon: Inbox,
     },
     {

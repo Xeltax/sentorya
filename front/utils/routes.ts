@@ -3,6 +3,10 @@ export const ROUTES = {
         USER : {
             CRUD : "/user"
         },
+        CAMPAIGN : {
+            CRUD : "/campaign",
+            GET_BY_ID : (id: string) => `/campaign/${id}`,
+        },
         AUTH : {
             LOGIN: "/auth/login",
             LOGOUT: "/auth/logout",
