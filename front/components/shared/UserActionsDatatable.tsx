@@ -62,7 +62,7 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
                 role: formData.role as "user" | "admin",
             };
 
-            onUserUpdate(updatedUser);
+            onUserUpdate(response.data);
 
             setOpenDialog("");
             console.log("User updated successfully:", response);
@@ -166,7 +166,7 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
                                                 <FormItem>
                                                     <FormLabel>Email</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="email@example.com" {...field} />
+                                                        <Input type={"email"} placeholder="email@example.com" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
