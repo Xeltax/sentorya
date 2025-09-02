@@ -1,8 +1,12 @@
 import axios from 'axios';
 import {getCookie} from "cookies-next";
 
+const isServer = typeof window === 'undefined'
+
 const Client = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
+    baseURL: isServer
+        ? process.env.API_URL        // SSR / getServerSideProps
+        : process.env.NEXT_PUBLIC_API_URL,  // client-side
     headers: {
         'Content-Type': 'application/json',
     },
