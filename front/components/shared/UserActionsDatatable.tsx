@@ -37,6 +37,8 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
     const [openDialog, setOpenDialog] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+    console.log(data);
+
     const form = useForm({
         defaultValues: {
             email: data.email,
@@ -52,15 +54,6 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
         try {
             formData.id = data.id;
             const response = await Client.put(ROUTES.BACK.USER.CRUD, formData);
-
-            const updatedUser: User = {
-                ...data,
-                email: formData.email,
-                name: formData.name,
-                organizationName: formData.organizationName || data.organizationName,
-                phoneNumber: formData.phoneNumber || data.phoneNumber,
-                role: formData.role as "user" | "admin",
-            };
 
             onUserUpdate(response.data);
 
@@ -143,9 +136,11 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
                             <DialogDescription asChild>
                                 <div>
                                     Information de l&apos;utilisateur:
-                                    <p><strong>Name:</strong> {data.name}</p>
-                                    <p><strong>Role:</strong> {data.role}</p>
-                                    <p><strong>Created At:</strong> {new Date(data.createdAt).toLocaleString()}</p>
+                                    <p><strong>Nom:</strong> {data.name}</p>
+                                    <p><strong>Rôle:</strong> {data.role}</p>
+                                    <p><strong>Entreprise lié :</strong> {data.organizationName}</p>
+                                    <p><strong>N° de téléphone :</strong> {data.phoneNumber}</p>
+                                    <p><strong>Crée le:</strong> {new Date(data.createdAt).toLocaleString()}</p>
                                 </div>
                             </DialogDescription>
                         </DialogHeader>

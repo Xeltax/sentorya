@@ -122,7 +122,7 @@ export function DataTableWithSearch<TData, TValue>({
                                 >
                                     {globalFilter
                                         ? "Aucun résultat trouvé pour votre recherche."
-                                        : "Aucun utilisateur trouvé."
+                                        : "Aucunes données trouvé."
                                     }
                                 </TableCell>
                             </TableRow>

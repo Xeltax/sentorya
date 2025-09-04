@@ -33,7 +33,7 @@ export default function RootLayout({
           <SmoothScroll>
             {children}
           </SmoothScroll>
-          <Toaster position={"top-center"} />
+          <Toaster position={"top-center"} richColors={true} />
       </body>
     </html>
   );

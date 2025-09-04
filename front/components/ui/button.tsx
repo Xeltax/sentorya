@@ -20,11 +20,15 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        hero: "bg-gradient-to-r from-[hsl(var(--cyber-blue))] to-[hsl(var(--cyber-dark))] text-white shadow-[var(--shadow-cyber)] hover:shadow-xl hover:scale-105 border-0 font-semibold",
+        "outline-hero": "border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-white font-semibold",
+        cyber: "bg-[hsl(var(--cyber-dark))] text-white hover:bg-[hsl(var(--cyber-blue))] shadow-md"
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        xl: "h-14 rounded-lg px-10 text-lg",
         icon: "size-9",
       },
     },

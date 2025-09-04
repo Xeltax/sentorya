@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Campaign } from "@/types/Campaign";
-import { User } from "@/types/User";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -15,6 +14,7 @@ import { columns } from "@/app/admin/campains/columns";
 import {ROUTES} from "@/utils/routes";
 import {toast} from "sonner";
 import Client from "@/utils/client";
+import {User} from "@/types/User";
 
 interface CampaignsDataTableProps {
     initialCampaigns: Campaign[];
@@ -57,13 +57,16 @@ const CampaignsDataTable = ({ initialCampaigns, allUsers }: CampaignsDataTablePr
             setOpenDialog(false);
             form.reset();
             toast.success("Campagne créée avec succès !");
-        } catch (error) {
+        // @ts-expect-error("error is of type unknown")
+        } catch (error : never) {
             console.error(error);
-            toast.error("Erreur lors de la création de la campagne");
+            toast.error(error.response?.data?.error || "Une erreur est survenue lors de la création de la campagne.");
         }
     };
 
     const tableColumns = columns(handleCampaignUpdate, handleCampaignDelete);
+
+    console.log(campaigns)
 
     return (
         <>

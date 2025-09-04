@@ -71,7 +71,7 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
             console.log("User created successfully:", response);
             setUsers(prevUsers => [...prevUsers, response.data]);
             form.reset();
-            toast.success("Créatoion de l'utilisateur réussie !");
+            toast.success("Création de l'utilisateur réussie !");
             setConfirmCreate(false);
 
         } catch (error) {
@@ -109,7 +109,10 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
             {openDialog && (
                 <Dialog
                     open={openDialog}
-                    onOpenChange={(open) => setOpenDialog(open)}
+                    onOpenChange={(open) => {
+                        setOpenDialog(open)
+                        form.reset()
+                    }}
                 >
                     <DialogContent>
                         <DialogHeader>
@@ -120,9 +123,10 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
                                         <FormField
                                             control={form.control}
                                             name="email"
+                                            rules={{ required: "L'email est requis" }}
                                             defaultValue=""
                                             render={({ field }) => (
-                                                <FormItem>
+                                                <FormItem aria-required={true}>
                                                     <FormLabel>Email</FormLabel>
                                                     <FormControl>
                                                         <Input type={"email"} placeholder="email@example.com" {...field} />
@@ -176,8 +180,9 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
                                         <FormField
                                             control={form.control}
                                             name="password"
+                                            rules={{ required: "Le mot de passe dois être généré" }}
                                             render={({ field }) => (
-                                                <FormItem>
+                                                <FormItem aria-required={true}>
                                                     <FormLabel>Mot de passe</FormLabel>
                                                     <FormControl>
                                                         <div className={"flex items-center gap-2"}>
@@ -244,7 +249,7 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
                             </DialogDescription>
                         </DialogHeader>
                         <div className="flex justify-end gap-2 mt-4">
-                            <Button variant="outline" onClick={() => setOpenDialog(false)}>
+                            <Button variant="outline" onClick={() => {setConfirmCreate(false)}}>
                                 Annuler
                             </Button>
                             <Button variant="secondary" onClick={() => createUser(formData!)}>

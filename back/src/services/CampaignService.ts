@@ -8,10 +8,10 @@ export class CampaignService {
     private campaignRepository: CampaignRepository = new CampaignRepository();
 
     async createCampaign(data: CampaignDTO): Promise<Campaign> {
-        console.log("Creating user with data:", data.campaignId);
+        console.log("Creating campaign with data:", data.campaignId);
         const existingCampaign = await this.campaignRepository.getByCampaignId(data.campaignId);
         if (existingCampaign) {
-            throw new Error("Campaign already exists");
+            throw new Error("Une campagne avec cet ID existe déjà");
         }
 
         return await this.campaignRepository.save(data);
