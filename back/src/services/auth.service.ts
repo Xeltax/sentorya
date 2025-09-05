@@ -1,9 +1,7 @@
-import httpClient from './httpClient.service';
-import { config } from '../config';
-import { User } from '../types';
 import {UserRepository} from "../repositories/UserRepository";
 import {compare} from "bcrypt";
 import * as jwt from "jsonwebtoken";
+import {User} from "../models/User";
 
 export class AuthService {
     private userRepository: UserRepository = new UserRepository();

@@ -1,9 +1,5 @@
 import { Request, Response } from "express";
 import {AuthService} from "../services/auth.service";
-import {hash, compare} from "bcrypt";
-import * as jwt from "jsonwebtoken";
-import {User} from "../types";
-import {AuthDTO} from "../DTO/AuthDTO";
 
 const authService = new AuthService()
 
