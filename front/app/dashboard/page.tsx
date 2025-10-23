@@ -5,7 +5,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Mail, Users, AlertTriangle, CheckCircle, Clock, TrendingUp, Eye, MousePointer } from 'lucide-react';
+import {
+    Mail,
+    Users,
+    AlertTriangle,
+    CheckCircle,
+    Clock,
+    TrendingUp,
+    Eye,
+    MousePointer,
+    ChevronsUpDown
+} from 'lucide-react';
+import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
+import {boolean} from "zod";
+import {Button} from "@/components/ui/button";
 
 const mockCampaigns = [
     {
@@ -54,6 +67,7 @@ const mockCampaigns = [
 
 export default function Page() {
     // const [selectedCampaign, setSelectedCampaign] = useState(null);
+    const [isCollapseOpen, setCollapseOpen] = React.useState<boolean[]>([]);
 
     // Calcul des statistiques globales
     const totalCampaigns = mockCampaigns.length;
@@ -267,77 +281,93 @@ export default function Page() {
                 <TabsContent value="campaigns" className="space-y-4">
                     <div className="grid gap-6">
                         {mockCampaigns.map(campaign => (
-                            <Card key={campaign.id}>
-                                <CardHeader>
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <CardTitle>{campaign.name}</CardTitle>
-                                            <CardDescription>
-                                                Template: {campaign.template.name} •
-                                                Lancée le {new Date(campaign.launch_date).toLocaleDateString('fr-FR')}
-                                            </CardDescription>
-                                        </div>
-                                        <Badge className={getStatusColor(campaign.status)}>
-                                            {campaign.status}
-                                        </Badge>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                                        <div className="text-center">
-                                            <div className="text-2xl font-bold">{campaign.results.length}</div>
-                                            <div className="text-sm text-gray-500">Emails Envoyés</div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="text-2xl font-bold text-green-600">
-                                                {campaign.results.filter(r => ['Email Opened', 'Clicked', 'Submitted Data'].includes(r.status)).length}
+                            <Collapsible
+                                key={campaign.id}
+                                open={isCollapseOpen[campaign.id]}
+                            >
+                                <Card key={campaign.id}>
+                                    <CardHeader>
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <CardTitle>{campaign.name}</CardTitle>
+                                                <CardDescription>
+                                                    Template: {campaign.template.name} •
+                                                    Lancée le {new Date(campaign.launch_date).toLocaleDateString('fr-FR')}
+                                                </CardDescription>
                                             </div>
-                                            <div className="text-sm text-gray-500">Ouverts</div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="text-2xl font-bold text-orange-600">
-                                                {campaign.results.filter(r => ['Clicked', 'Submitted Data'].includes(r.status)).length}
+                                            <div className={"flex gap-2 align-items-center"}>
+                                                <Badge className={getStatusColor(campaign.status)}>
+                                                    {campaign.status}
+                                                </Badge>
+                                                <CollapsibleTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="size-8">
+                                                        <ChevronsUpDown />
+                                                        <span className="sr-only">Toggle</span>
+                                                    </Button>
+                                                </CollapsibleTrigger>
                                             </div>
-                                            <div className="text-sm text-gray-500">Cliqués</div>
                                         </div>
-                                        <div className="text-center">
-                                            <div className="text-2xl font-bold text-blue-600">
-                                                {campaign.results.filter(r => r.reported).length}
-                                            </div>
-                                            <div className="text-sm text-gray-500">Signalés</div>
-                                        </div>
-                                    </div>
+                                    </CardHeader>
+                                    <CollapsibleContent>
 
-                                    {/* Liste des résultats */}
-                                    <div className="space-y-2">
-                                        <h4 className="font-semibold">Détails des résultats:</h4>
-                                        <div className="grid gap-2">
-                                            {campaign.results.slice(0, 5).map(result => (
-                                                <div key={result.id} className="flex justify-between items-center p-2 bg-secondary rounded">
-                                                    <div>
-                                                        <span className="font-medium">{result.first_name} {result.last_name}</span>
-                                                        <span className="text-sm text-gray-500 ml-2">({result.position})</span>
-                                                        <span className="text-sm text-gray-500 ml-2">{result.email}</span>
-                                                    </div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <Badge variant={getResultStatusColor(result.status)}>
-                                                            {result.status}
-                                                        </Badge>
-                                                        {result.reported && (
-                                                            <CheckCircle className="h-4 w-4 text-green-500" />
-                                                        )}
-                                                    </div>
+                                        <CardContent>
+                                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                                                <div className="text-center">
+                                                    <div className="text-2xl font-bold">{campaign.results.length}</div>
+                                                    <div className="text-sm text-gray-500">Emails Envoyés</div>
                                                 </div>
-                                            ))}
-                                            {campaign.results.length > 5 && (
-                                                <div className="text-sm text-gray-500 text-center py-2">
-                                                    ... et {campaign.results.length - 5} autres résultats
+                                                <div className="text-center">
+                                                    <div className="text-2xl font-bold text-green-600">
+                                                        {campaign.results.filter(r => ['Email Opened', 'Clicked', 'Submitted Data'].includes(r.status)).length}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">Ouverts</div>
                                                 </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                                <div className="text-center">
+                                                    <div className="text-2xl font-bold text-orange-600">
+                                                        {campaign.results.filter(r => ['Clicked', 'Submitted Data'].includes(r.status)).length}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">Cliqués</div>
+                                                </div>
+                                                <div className="text-center">
+                                                    <div className="text-2xl font-bold text-blue-600">
+                                                        {campaign.results.filter(r => r.reported).length}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">Signalés</div>
+                                                </div>
+                                            </div>
+
+                                            {/* Liste des résultats */}
+                                            <div className="space-y-2">
+                                                <h4 className="font-semibold">Détails des résultats:</h4>
+                                                <div className="grid gap-2">
+                                                    {campaign.results.slice(0, 5).map(result => (
+                                                        <div key={result.id} className="flex justify-between items-center p-2 bg-secondary rounded">
+                                                            <div>
+                                                                <span className="font-medium">{result.first_name} {result.last_name}</span>
+                                                                <span className="text-sm text-gray-500 ml-2">({result.position})</span>
+                                                                <span className="text-sm text-gray-500 ml-2">{result.email}</span>
+                                                            </div>
+                                                            <div className="flex items-center space-x-2">
+                                                                <Badge variant={getResultStatusColor(result.status)}>
+                                                                    {result.status}
+                                                                </Badge>
+                                                                {result.reported && (
+                                                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                    {campaign.results.length > 5 && (
+                                                        <div className="text-sm text-gray-500 text-center py-2">
+                                                            ... et {campaign.results.length - 5} autres résultats
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </CollapsibleContent>
+                                </Card>
+                            </Collapsible>
                         ))}
                     </div>
                 </TabsContent>

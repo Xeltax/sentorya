@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Shield, Menu, X } from "lucide-react";
 import { useState } from "react";
+import Logo from "@/public/logo right side text.png"
+import Image from "next/image";
 
 export const Navigation = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,8 +29,7 @@ export const Navigation = () => {
                         transition={{ delay: 0.2 }}
                         className="flex items-center gap-2"
                     >
-                        <Shield className="w-8 h-8 text-primary" />
-                        <span className="text-xl font-bold text-foreground">Sentorya</span>
+                        <Image src={Logo} alt={"Sentorya lgoo"}/>
                     </motion.div>
 
                     {/* Desktop Navigation */}
