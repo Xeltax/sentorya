@@ -17,10 +17,6 @@ export const columns = (
         header: "Nom",
     },
     {
-        accessorKey: "organizationName",
-        header: "Entreprise",
-    },
-    {
         accessorKey: "phoneNumber",
         header: "Numéro de téléphone",
     },

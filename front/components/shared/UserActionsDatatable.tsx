@@ -22,7 +22,6 @@ type UserFormData = {
     id?: string
     email: string;
     name: string;
-    organizationName?: string;
     phoneNumber?: string;
     role: string;
 }
@@ -43,7 +42,6 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
         defaultValues: {
             email: data.email,
             name: data.name,
-            organizationName: data.organizationName || "",
             phoneNumber: data.phoneNumber || "",
             role: data.role,
         },
@@ -138,7 +136,7 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
                                     Information de l&apos;utilisateur:
                                     <p><strong>Nom:</strong> {data.name}</p>
                                     <p><strong>Rôle:</strong> {data.role}</p>
-                                    <p><strong>Entreprise lié :</strong> {data.organizationName}</p>
+                                    <p><strong>Entreprise lié :</strong> SOON</p>
                                     <p><strong>N° de téléphone :</strong> {data.phoneNumber}</p>
                                     <p><strong>Crée le:</strong> {new Date(data.createdAt).toLocaleString()}</p>
                                 </div>
@@ -175,20 +173,6 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
                                                     <FormLabel>Nom</FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Nom complet" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="organizationName"
-                                            defaultValue=""
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Entreprise</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Nom de l'entreprise" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

@@ -25,7 +25,7 @@ interface DataTableProps<TData, TValue> {
 
 // Fonction de filtre personnalisée pour rechercher dans plusieurs champs
 const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
-    const searchFields = ['email', 'name', 'organizationName', 'phoneNumber']
+    const searchFields = ['email', 'name', 'phoneNumber']
 
     if (!value) return true
 
