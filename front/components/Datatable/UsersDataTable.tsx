@@ -32,9 +32,6 @@ type UserFormData = {
 const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
     const [users, setUsers] = useState<User[]>(initialUsers);
     const [openDialog, setOpenDialog] = useState(false);
-    const [confirmCreate, setConfirmCreate] = useState(false);
-    const [formData, setFormData] = useState<UserFormData>()
-    const form = useForm<UserFormData>();
 
     const handleUserUpdate = (updatedUser: User) => {
         setUsers(prevUsers =>
@@ -66,11 +63,8 @@ const UsersDataTable = ({ initialUsers }: UsersDataTableProps) => {
 
             <DataTableWithSearch columns={tableColumns} data={users}/>
             {openDialog && (
-                <CreateUserDialog isOpen={} toggle={}/>
-            )}
-
-            {confirmCreate && (
-                <ConfirmUserCreateDialog isOpen={} toggle={} handleConfirm={}/>
+                // @ts-expect-error(2322): Issue with props type inference
+                <CreateUserDialog isOpen={openDialog} toggle={() => setOpenDialog(!openDialog)} handleUsers={(users) => setUsers(prevUsers => [...prevUsers, users])}/>
             )}
         </>
     );

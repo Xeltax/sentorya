@@ -1,7 +1,7 @@
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 
-const ConfirmUserCreateDialog = (props : {isOpen :boolean, toggle : () => void, handleConfirm : () => void}) => {
+const ConfirmUserCreateDialog = (props : {isOpen :boolean, toggle : () => void, handleConfirm : (formData : any) => void, formData : any}) => {
     return (
         <Dialog
             open={props.isOpen}
@@ -18,7 +18,7 @@ const ConfirmUserCreateDialog = (props : {isOpen :boolean, toggle : () => void, 
                     <Button variant="outline" onClick={() => {props.toggle()}}>
                         Annuler
                     </Button>
-                    <Button variant="secondary" onClick={() => createUser(formData!)}>
+                    <Button variant="secondary" onClick={() => props.handleConfirm(props.formData!)}>
                         Confirmer la création
                     </Button>
                 </div>

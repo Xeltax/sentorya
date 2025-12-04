@@ -3,6 +3,7 @@ import Client, {setBearerToken} from "@/utils/client";
 import {ROUTES} from "@/utils/routes";
 import {User} from "@/types/User";
 import OrganizationDatatable from "@/app/admin/organizations/OrganizationDatatable";
+import {OrganizationsWithMembers} from "@/types/OrganizationsWithMembers";
 
 export default async function OrganizationsPage() {
     const cookieStore = await cookies();
@@ -33,7 +34,7 @@ export default async function OrganizationsPage() {
 
     return (
         <div className="container mx-auto py-10">
-            <OrganizationDatatable initialOrganizations={organizations} />
+            <OrganizationDatatable initialOrganizations={organizations} users={users} />
         </div>
     );
 }

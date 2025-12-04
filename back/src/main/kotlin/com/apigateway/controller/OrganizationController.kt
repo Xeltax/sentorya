@@ -74,7 +74,7 @@ class OrganizationController {
         @RequestBody data : addMemberDTO
     ): ResponseEntity<String> {
         val organization = organizationRepository.findById(data.organizationId)
-            .orElseThrow { Exception("Organization not found") }
+            .orElseThrow { Exception("Entreprise non trouvé") }
 
         val existingMember = organizationMemberRepository.findByOrganizationIdAndUserId(
             organization.id!!,
@@ -82,7 +82,7 @@ class OrganizationController {
         )
 
         if (existingMember != null) {
-            return ResponseEntity.badRequest().body("User is already a member of the organization.")
+            return ResponseEntity.badRequest().body("L'utilisateur est déjà membre de l'organisation.")
         } else {
             val newMember = com.apigateway.entity.OrganizationMember(
                 organizationId = organization.id!!,
@@ -92,7 +92,7 @@ class OrganizationController {
             organizationMemberRepository.save(newMember)
         }
 
-        return ResponseEntity.ok("Member added successfully.")
+        return ResponseEntity.ok("Membre ajouté avec succès.")
     }
 
     @PutMapping("/remove-member")
@@ -108,12 +108,15 @@ class OrganizationController {
         )
 
         if (existingMember == null) {
-            return ResponseEntity.badRequest().body("User is not a member of the organization.")
+            return ResponseEntity.badRequest().body("L'utilisateur n'est pas membre de l'organisation.")
         } else {
+            if (existingMember.role == OrganizationRole.OWNER) {
+                return ResponseEntity.badRequest().body("Impossible de supprimer le propriétaire de l'organisation.")
+            }
             organizationMemberRepository.delete(existingMember)
         }
 
-        return ResponseEntity.ok("Member removed successfully.")
+        return ResponseEntity.ok("Membre supprimé avec succès.")
     }
 
     @GetMapping("{organizationId}/members")

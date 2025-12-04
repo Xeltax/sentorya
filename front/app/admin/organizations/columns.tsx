@@ -2,19 +2,23 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { User } from "@/types/User";
-import UserActionsDatatable from "@/components/shared/UserActionsDatatable";
+import UserActionsDatatable from "@/components/Datatable/UserActionsDatatable";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {Button} from "@/components/ui/button";
+import {Eye, Pen, Trash, UserMinus, UserPlus} from "lucide-react";
+import OrganizationActionDatable from "@/components/Datatable/OrganizationActionDatable";
+import {OrganizationsWithMembers} from "@/types/OrganizationsWithMembers";
 
 export const columns = (
-    // onUserUpdate: (user: User) => void,
-    // onUserDelete: (userId: string) => void
-): ColumnDef<Organizations>[] => [
-    {
-        accessorKey: "email",
-        header: "Email",
-    },
+    users: User[]
+): ColumnDef<OrganizationsWithMembers>[] => [
     {
         accessorKey: "name",
         header: "Nom",
+    },
+    {
+        accessorKey: "email",
+        header: "Email",
     },
     {
         accessorKey: "phoneNumber",
@@ -51,16 +55,12 @@ export const columns = (
             )
         }
     },
-    // {
-    //     id: "actions",
-    //     cell: ({ row }) => {
-    //         return (
-    //             <UserActionsDatatable
-    //                 data={row.original}
-    //                 onUserUpdate={onUserUpdate}
-    //                 onUserDelete={onUserDelete}
-    //             />
-    //         )
-    //     },
-    // },
+    {
+        id: "actions",
+        cell: ({ row }) => {
+            return (
+                <OrganizationActionDatable organizations={row.original as OrganizationsWithMembers} users={users}/>
+            )
+        },
+    },
 ]

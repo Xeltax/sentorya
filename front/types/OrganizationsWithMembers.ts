@@ -1,4 +1,6 @@
-type OrganizationsWithMembers = {
+import {User} from "@/types/User";
+
+export type OrganizationsWithMembers = {
     id: string;
     name: string;
     email : string;

@@ -8,6 +8,8 @@ import {useForm} from "react-hook-form";
 import Client from "@/utils/client";
 import {ROUTES} from "@/utils/routes";
 import {toast} from "sonner";
+import {User} from "@/types/User";
+import ConfirmUserCreateDialog from "@/components/Popup/ConfirmUserCreateDialog/confirmUserCreateDialog";
 
 type UserFormData = {
     email: string;
@@ -17,9 +19,10 @@ type UserFormData = {
     role: string;
 }
 
-const CreateUserDialog = (props : {isOpen : boolean, toggle : () => void}) => {
+const CreateUserDialog = (props : {isOpen : boolean, toggle : () => void, handleUsers? : (users : User[]) => void}) => {
     const [formData, setFormData] = useState<UserFormData>()
     const form = useForm<UserFormData>();
+    const [confirmCreate, setConfirmCreate] = useState(false);
 
     const createUser = async (formData: UserFormData) => {
         try {
@@ -27,7 +30,9 @@ const CreateUserDialog = (props : {isOpen : boolean, toggle : () => void}) => {
 
             props.toggle()
             console.log("User created successfully:", response);
-            setUsers(prevUsers => [...prevUsers, response.data]);
+            if (props.handleUsers) {
+                props.handleUsers(response.data as User[]);
+            }
             form.reset();
             toast.success("Création de l'utilisateur réussie !");
             setConfirmCreate(false);
@@ -64,119 +69,124 @@ const CreateUserDialog = (props : {isOpen : boolean, toggle : () => void}) => {
     }
 
     return (
-        <Dialog
+        <>
+            <Dialog
             open={props.isOpen}
             onOpenChange={(open) => {
                 props.toggle()
                 form.reset()
             }}
-        >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Création d&apos;un utilisateurs</DialogTitle>
-                    <DialogDescription asChild>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    rules={{ required: "L'email est requis" }}
-                                    defaultValue=""
-                                    render={({ field }) => (
-                                        <FormItem aria-required={true}>
-                                            <FormLabel>Email</FormLabel>
-                                            <FormControl>
-                                                <Input type={"email"} placeholder="email@example.com" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    defaultValue=""
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Nom</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Nom complet" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="phoneNumber"
-                                    defaultValue=""
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Numéro de téléphone</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Numéro de tel" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    rules={{ required: "Le mot de passe dois être généré" }}
-                                    render={({ field }) => (
-                                        <FormItem aria-required={true}>
-                                            <FormLabel>Mot de passe</FormLabel>
-                                            <FormControl>
-                                                <div className={"flex items-center gap-2"}>
-                                                    <Input
-                                                        placeholder="Mot de passe"
-                                                        readOnly={true}
-                                                        type="text"
-                                                        value={field.value || ""}
-                                                    ></Input>
-                                                    <Button
-                                                        type="button"
-                                                        onClick={() => field.onChange(generateRandomPassword())}>
-                                                        Générer un mot de passe
-                                                    </Button>
-                                                </div>
-
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="role"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Role</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={"USER"}>
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Création d&apos;un utilisateurs</DialogTitle>
+                        <DialogDescription asChild>
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        rules={{ required: "L'email est requis" }}
+                                        defaultValue=""
+                                        render={({ field }) => (
+                                            <FormItem aria-required={true}>
+                                                <FormLabel>Email</FormLabel>
                                                 <FormControl>
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Role"/>
-                                                    </SelectTrigger>
+                                                    <Input type={"email"} placeholder="email@example.com" {...field} />
                                                 </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="USER">USER</SelectItem>
-                                                    <SelectItem value="ADMIN">ADMIN</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button type="submit">
-                                    {"Créer l'utilisateur"}
-                                </Button>
-                            </form>
-                        </Form>
-                    </DialogDescription>
-                </DialogHeader>
-            </DialogContent>
-        </Dialog>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="name"
+                                        defaultValue=""
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Nom</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Nom complet" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="phoneNumber"
+                                        defaultValue=""
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Numéro de téléphone</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Numéro de tel" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        rules={{ required: "Le mot de passe dois être généré" }}
+                                        render={({ field }) => (
+                                            <FormItem aria-required={true}>
+                                                <FormLabel>Mot de passe</FormLabel>
+                                                <FormControl>
+                                                    <div className={"flex items-center gap-2"}>
+                                                        <Input
+                                                            placeholder="Mot de passe"
+                                                            readOnly={true}
+                                                            type="text"
+                                                            value={field.value || ""}
+                                                        ></Input>
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() => field.onChange(generateRandomPassword())}>
+                                                            Générer un mot de passe
+                                                        </Button>
+                                                    </div>
+
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="role"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Role</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={"USER"}>
+                                                    <FormControl>
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Role"/>
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="USER">USER</SelectItem>
+                                                        <SelectItem value="ADMIN">ADMIN</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <Button type="submit">
+                                        {"Créer l'utilisateur"}
+                                    </Button>
+                                </form>
+                            </Form>
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
+
+            <ConfirmUserCreateDialog isOpen={confirmCreate} toggle={() => setConfirmCreate(!confirmCreate)} handleConfirm={createUser} formData={formData}/>
+
+        </>
     )
 }
 

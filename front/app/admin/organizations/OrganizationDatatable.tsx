@@ -5,15 +5,21 @@ import {columns} from "@/app/admin/organizations/columns";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {DataTableWithSearch} from "@/components/Datatable/DatatableWithSearch";
+import CreateOrganizationDialog from "@/components/Popup/CreateOrganizationDialog/createOrganizationDialog";
+import {User} from "@/types/User";
+import {OrganizationsWithMembers} from "@/types/OrganizationsWithMembers";
 
 interface OrganizationsDataTableProps {
-    initialOrganizations: Organizations[];
+    initialOrganizations: OrganizationsWithMembers[];
+    users: User[];
 }
 
-const UsersDataTable = ({ initialOrganizations }: OrganizationsDataTableProps) => {
-    const [organizations, setOrganizations] = useState<Organizations[]>(initialOrganizations);
+const OrganizationDatatable = ({ initialOrganizations, users }: OrganizationsDataTableProps) => {
+    const [organizations, setOrganizations] = useState<OrganizationsWithMembers[]>(initialOrganizations);
+    const [openDialog, setOpenDialog] = useState(false);
 
-    const tableColumns = columns()
+    const tableColumns = columns(users);
+
 
     return (
         <>
@@ -22,14 +28,18 @@ const UsersDataTable = ({ initialOrganizations }: OrganizationsDataTableProps) =
                 <p>
                     Vous pouvez gérer les orgnizations ici. Cliquez sur les actions pour modifier ou supprimer une organizations ou bien ajouter en un.
                 </p>
-                <Button className="w-fit" >
+                <Button className="w-fit" onClick={() => setOpenDialog(true)}>
                     Ajouter une organization
                 </Button>
             </Card>
 
-            <DataTableWithSearch columns={tableColumns} data={organizations}/>
+            <DataTableWithSearch columns={tableColumns} data={organizations} />
+
+            {openDialog &&
+                <CreateOrganizationDialog isOpen={openDialog} toggle={() => setOpenDialog(!openDialog)} users={users}/>
+            }
         </>
     );
 };
 
-export default UsersDataTable;
+export default OrganizationDatatable;

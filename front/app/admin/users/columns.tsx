@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { User } from "@/types/User";
-import UserActionsDatatable from "@/components/shared/UserActionsDatatable";
+import UserActionsDatatable from "@/components/Datatable/UserActionsDatatable";
 
 export const columns = (
     onUserUpdate: (user: User) => void,
