@@ -1,7 +1,8 @@
 export const ROUTES = {
     BACK : {
         USER : {
-            CRUD : "/user"
+            CRUD : "/user",
+            RESET_PASSWORD : "/user/reset-password",
         },
         ORGANIZATION : {
             CRUD : "/organizations",
@@ -16,6 +17,7 @@ export const ROUTES = {
             GET_BY_ID : (id: string) => `/campaign/${id}`,
         },
         AUTH : {
+            CHANGE_PASSWORD_FIRST_LOGIN : "/auth/change-password",
             LOGIN: "/auth/login",
             LOGOUT: "/auth/logout",
             FORGOT_PASSWORD: "/auth/forgot-password",

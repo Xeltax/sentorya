@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
@@ -21,6 +22,7 @@ class AuthService(
     private val jwtTokenProvider: JwtTokenProvider
 ) {
 
+    @Transactional(readOnly = true)
     fun login(request: LoginRequest): LoginResponse {
         logger.info { "Login attempt for: ${request.email}" }
 
@@ -31,10 +33,6 @@ class AuthService(
             throw UnauthorizedException("Mot de passe incorrect")
         }
 
-        // Update first connection and last login
-        if (user.firstConnection) {
-            user.firstConnection = false
-        }
         user.lastLogin = LocalDateTime.now()
         userRepository.save(user)
 
@@ -42,7 +40,8 @@ class AuthService(
             email = user.email,
             name = user.name,
             role = user.role.name,
-            userId = user.id!!
+            userId = user.id!!,
+            firstConnection = user.firstConnection
         )
 
         logger.info { "Login successful for: ${request.email}" }
@@ -51,5 +50,17 @@ class AuthService(
             user = user.toResponse(),
             token = token
         )
+    }
+
+    fun changePassword(userId: UUID, newPassword: String) {
+        val user = userRepository.findById(userId)
+            .orElseThrow { UnauthorizedException("Utilisateur non trouvé") }
+
+        println("Changing password for user ID: $userId")
+
+        user.password = passwordEncoder.encode(newPassword)
+        user.firstConnection = false
+
+        userRepository.save(user)
     }
 }

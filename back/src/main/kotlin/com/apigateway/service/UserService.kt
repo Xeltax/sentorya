@@ -9,6 +9,7 @@ import mu.KotlinLogging
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
@@ -69,6 +70,18 @@ class UserService(
         return updatedUser.toResponse()
     }
 
+    @Transactional(readOnly = true)
+    fun resetPassword(id: UUID) : String {
+        val user = userRepository.findById(id)
+            .orElseThrow { ResourceNotFoundException("User not found") }
+
+        val password = generatePassword()
+        user.password = passwordEncoder.encode(password)
+        userRepository.save(user)
+
+        return password
+    }
+
     fun deleteUser(id: String) {
         if (!userRepository.existsById(id)) {
             throw ResourceNotFoundException("User not found")
@@ -80,6 +93,13 @@ class UserService(
     fun findById(id: String): User {
         return userRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("User not found") }
+    }
+
+    fun generatePassword(): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&*()-_=+"
+        return (1..12)
+            .map { chars.random() }
+            .joinToString("")
     }
 }
 

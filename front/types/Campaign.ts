@@ -4,5 +4,5 @@ export type Campaign = {
     id: string,
     name : string,
     campaignId : string,
-    users : User[]
+    organizationId : string,
 }

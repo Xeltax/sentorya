@@ -45,9 +45,6 @@ data class User(
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     val updatedAt: LocalDateTime? = null,
-
-    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
-    val campaigns: MutableSet<Campaign> = mutableSetOf()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

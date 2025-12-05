@@ -1,6 +1,6 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Eye, Pen, Trash } from "lucide-react";
+import {Eye, KeyRound, Pen, Trash} from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -17,6 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import Client from "@/utils/client";
 import { ROUTES } from "@/utils/routes";
 import { toast } from "sonner"
+import ConfirmationDialog from "@/components/Popup/ConfirmationPopup/ConfirmationDialog";
+import ShowDataDialog from "@/components/Popup/ShowDataPopup/ShowDataDialog";
 
 type UserFormData = {
     id?: string
@@ -35,6 +37,7 @@ interface UserActionsDatatableProps {
 const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsDatatableProps) => {
     const [openDialog, setOpenDialog] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [passwordReset, setPasswordReset] = useState("");
 
     console.log(data);
 
@@ -85,6 +88,13 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
         }
     };
 
+    const handleResetPassword = async () => {
+        setIsLoading(true);
+        const newPassword = await Client.put(ROUTES.BACK.USER.RESET_PASSWORD + `/${data.id}`);
+        setPasswordReset(newPassword.data)
+        setOpenDialog("showPassword")
+    }
+
     return (
         <div className={"flex items-center gap-2"}>
             <Tooltip>
@@ -108,6 +118,18 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
                 </TooltipTrigger>
                 <TooltipContent>
                     <p>Modifier l&apos;utilisateur</p>
+                </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button variant="outline" className="h-8 w-8 p-0" onClick={() => setOpenDialog("Confirm")}>
+                        <span className="sr-only">Voir</span>
+                        <KeyRound className="h-4 w-4" />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Reinitialiser le mot de passe</p>
                 </TooltipContent>
             </Tooltip>
 
@@ -242,6 +264,14 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
                     </DialogContent>
                 )}
             </Dialog>
+
+            {openDialog === "Confirm" &&
+                <ConfirmationDialog isOpen={openDialog === "Confirm"} toggle={() => setOpenDialog("")} message={"Êtes vous sur de vouloir reinitialiser le mot de passe du compte ?"} onConfirm={handleResetPassword}/>
+            }
+
+            {openDialog === "showPassword" &&
+                <ShowDataDialog isOpen={openDialog === "showPassword"} toggle={() => setOpenDialog('')} title={`Nouveau mot de passe pour ${data.email}`} data={passwordReset}/>
+            }
         </div>
     );
 };

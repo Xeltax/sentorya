@@ -10,22 +10,31 @@ export default async function UsersPage() {
     const jwtCookie = cookieStore.get("JWT");
     setBearerToken(jwtCookie?.value || "");
 
-    const data = await Client.get(ROUTES.BACK.USER.CRUD).then(
+    const data = await Client.get(ROUTES.BACK.ORGANIZATION.CRUD).then(
         (res) => res.data
     );
 
-    const users: User[] = await data;
+    const organizations: Organizations[] = await data;
 
     const data2 = await Client.get(ROUTES.BACK.CAMPAIGN.CRUD).then(
         (res) => res.data
     );
+
+    data2.map((campaign: Campaign) => {
+        const org = organizations.find(org => org.id === campaign.organizationId);
+        if (org) {
+            campaign.organizationName = org.name;
+        }
+    })
+
+    console.log(data2);
 
     const campains: Campaign[] = await data2;
 
     return (
         <div className="container mx-auto py-10">
             {/* Composant client qui reçoit les données SSR */}
-            <CampaignsDataTable allUsers={users} initialCampaigns={campains} />
+            <CampaignsDataTable allOrganizations={organizations} initialCampaigns={campains} />
         </div>
     );
 }

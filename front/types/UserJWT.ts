@@ -5,4 +5,5 @@ export type UserJWT = {
     name: string
     role: "USER" | "ADMIN"
     userId: string
+    firstConnection: boolean
 }

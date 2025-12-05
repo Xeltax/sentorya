@@ -8,6 +8,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/user")
@@ -43,5 +44,11 @@ class UserController(
     fun deleteUser(@PathVariable id: String): ResponseEntity<Unit> {
         userService.deleteUser(id)
         return ResponseEntity.noContent().build()
+    }
+
+    @PutMapping("/reset-password/{id}")
+    fun resetPassword(@PathVariable id: UUID): ResponseEntity<String> {
+        val newPassword = userService.resetPassword(id)
+        return ResponseEntity.ok(newPassword)
     }
 }

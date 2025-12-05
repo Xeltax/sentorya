@@ -34,11 +34,11 @@ export default function Page() {
                 }
             } else {
                 // Handle login failure (e.g., show an error message)
-                alert("Login failed: " + response.data.message);
+                alert("Login failed: " + response.data.error);
             }
         }).catch((error) => {
             console.log(error);
-            toast.error("Connexion échoué : " + error.response.data.message);
+            toast.error("Connexion échoué : " + error.response.data.error);
         })
     };
 

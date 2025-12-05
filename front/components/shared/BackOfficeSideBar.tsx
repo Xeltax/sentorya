@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem
 } from "@/components/ui/sidebar"
-import {DoorOpen, Home, Inbox, Moon, Newspaper, Settings, Sun, User} from "lucide-react";
+import {Building, DoorOpen, Home, Inbox, Moon, Newspaper, Settings, Sun, User} from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "../ui/dropdown-menu";
 import {Button } from "../ui/button";
 import {useTheme} from "next-themes";
@@ -24,6 +24,11 @@ const items = [
         title: "Utilisateurs",
         url: "/admin/users",
         icon: User,
+    },
+    {
+        title: "Entreprises",
+        url: "/admin/organizations",
+        icon: Building,
     },
     {
         title: "Campagnes",

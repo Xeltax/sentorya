@@ -15,19 +15,20 @@ import {ROUTES} from "@/utils/routes";
 import {toast} from "sonner";
 import Client from "@/utils/client";
 import {User} from "@/types/User";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 interface CampaignsDataTableProps {
     initialCampaigns: Campaign[];
-    allUsers: User[];
+    allOrganizations: Organizations[];
 }
 
 type CampaignFormData = {
     name: string;
     campaignId: string;
-    userIds: string[];
+    organizationId: string;
 };
 
-const CampaignsDataTable = ({ initialCampaigns, allUsers }: CampaignsDataTableProps) => {
+const CampaignsDataTable = ({ initialCampaigns, allOrganizations }: CampaignsDataTableProps) => {
     const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
     const [openDialog, setOpenDialog] = useState(false);
 
@@ -35,7 +36,7 @@ const CampaignsDataTable = ({ initialCampaigns, allUsers }: CampaignsDataTablePr
         defaultValues: {
             name: "",
             campaignId: "",
-            userIds: [],
+            organizationId: "",
         },
     });
 
@@ -120,20 +121,23 @@ const CampaignsDataTable = ({ initialCampaigns, allUsers }: CampaignsDataTablePr
 
                                         <FormField
                                             control={form.control}
-                                            name="userIds"
+                                            name="organizationId"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Utilisateurs associés</FormLabel>
+                                                    <FormLabel>Entreprise associés</FormLabel>
                                                     <FormControl>
-                                                        <MultiSelect
-                                                            options={allUsers.map(u => ({
-                                                                label: u.email || u.name,
-                                                                value: u.id,
-                                                            }))}
-                                                            value={field.value}
-                                                            onChange={field.onChange}
-                                                            placeholder="Sélectionner des utilisateurs"
-                                                        />
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                            <SelectTrigger className="w-full">
+                                                                <SelectValue placeholder="Sélectionner une entreprises" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {allOrganizations.map((org) => (
+                                                                    <SelectItem key={org.id} value={org.id}>
+                                                                        {org.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

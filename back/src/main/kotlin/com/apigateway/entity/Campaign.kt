@@ -1,13 +1,14 @@
 package com.apigateway.entity
 
 import jakarta.persistence.*
+import java.util.UUID
 
 @Entity
 @Table(name = "campaigns")
 data class Campaign(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    val id: String? = null,
+    val id: UUID? = null,
 
     @Column(nullable = false)
     var name: String,
@@ -15,23 +16,8 @@ data class Campaign(
     @Column(name = "campaign_id", unique = true, nullable = false)
     val campaignId: String,
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "campaign_users",
-        joinColumns = [JoinColumn(name = "campaign_id")],
-        inverseJoinColumns = [JoinColumn(name = "user_id")]
-    )
-    val users: MutableSet<User> = mutableSetOf()
+    val organizationId : UUID,
 ) {
-    fun addUser(user: User) {
-        users.add(user)
-        user.campaigns.add(this)
-    }
-
-    fun removeUser(user: User) {
-        users.remove(user)
-        user.campaigns.remove(this)
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

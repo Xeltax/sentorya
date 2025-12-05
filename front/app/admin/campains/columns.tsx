@@ -16,6 +16,10 @@ export const columns = (
         header: "ID de la campagne",
     },
     {
+        accessorKey: "organizationName",
+        header: "Entreprise liée",
+    },
+    {
         id: "actions",
         // cell: ({ row }) => {
         //     return (

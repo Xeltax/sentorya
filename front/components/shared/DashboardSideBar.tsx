@@ -9,10 +9,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem
 } from "@/components/ui/sidebar"
-import {DoorOpen, Home, Moon, Settings, Sun} from "lucide-react";
+import {DoorOpen, Home, Moon, Settings, Sun, User} from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "../ui/dropdown-menu";
 import {Button } from "../ui/button";
 import {useTheme} from "next-themes";
+import {useRouter} from "next/navigation";
 
 const items = [
     {
@@ -29,6 +30,7 @@ const items = [
 
 export function DashboardSideBar() {
     const { setTheme } = useTheme()
+    const router = useRouter();
 
     const handleLogout = () => {
         document.cookie = "JWT=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -91,6 +93,15 @@ export function DashboardSideBar() {
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild>
+                                    <div onClick={() => router.push("/dashboard/profile")} className={"cursor-pointer"}>
+
+                                        <User />
+                                        <span>Profile</span>
+                                    </div>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
                                     <div onClick={() => handleLogout()} className={"cursor-pointer"}>

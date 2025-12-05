@@ -68,7 +68,9 @@ data class CreateCampaignRequest(
     val name: String,
 
     @field:NotBlank(message = "L'ID de campagne est requis")
-    val campaignId: String
+    val campaignId: String,
+
+    val organizationId: UUID
 )
 
 data class UpdateCampaignRequest(
@@ -85,14 +87,18 @@ data class CampaignUserRequest(
 )
 
 data class CampaignResponse(
-    val id: String,
+    val id: UUID,
     val name: String,
     val campaignId: String,
-    val users: List<UserResponse>
+    val organizationId: UUID
 )
 
 data class addMemberDTO(
     val organizationId: UUID,
     val userId: UUID,
     val role: OrganizationRole? = OrganizationRole.MEMBER
+)
+
+data class changePasswordDTO(
+    val password: String
 )

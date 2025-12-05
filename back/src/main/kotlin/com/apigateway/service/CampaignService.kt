@@ -29,7 +29,8 @@ class CampaignService(
 
         val campaign = Campaign(
             name = request.name,
-            campaignId = request.campaignId
+            campaignId = request.campaignId,
+            organizationId = request.organizationId,
         )
 
         val savedCampaign = campaignRepository.save(campaign)
@@ -38,25 +39,25 @@ class CampaignService(
 
     @Transactional(readOnly = true)
     fun getById(id: String): CampaignResponse {
-        val campaign = campaignRepository.findByIdWithUsers(id)
+        val campaign = campaignRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("Campaign not found") }
         return campaign.toResponse()
     }
 
     @Transactional(readOnly = true)
     fun getByCampaignId(campaignId: String): CampaignResponse {
-        val campaign = campaignRepository.findByCampaignIdWithUsers(campaignId)
+        val campaign = campaignRepository.findByCampaignId(campaignId)
             .orElseThrow { ResourceNotFoundException("Campaign not found") }
         return campaign.toResponse()
     }
 
     @Transactional(readOnly = true)
     fun getAllCampaigns(): List<CampaignResponse> {
-        return campaignRepository.findAllWithUsers().map { it.toResponse() }
+        return campaignRepository.findAll().map { it.toResponse() }
     }
 
     fun updateCampaign(id: String, request: UpdateCampaignRequest): CampaignResponse {
-        val campaign = campaignRepository.findByIdWithUsers(id)
+        val campaign = campaignRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("Campaign not found") }
 
         request.name?.let { campaign.name = it }
@@ -72,47 +73,11 @@ class CampaignService(
         campaignRepository.deleteById(id)
         logger.info { "Campaign deleted: $id" }
     }
-
-    fun addUserToCampaign(request: CampaignUserRequest): CampaignResponse {
-        val campaign = campaignRepository.findByCampaignIdWithUsers(request.campaignId)
-            .orElseThrow { ResourceNotFoundException("Campaign not found") }
-
-        val user = userRepository.findById(request.userId)
-            .orElseThrow { ResourceNotFoundException("User not found") }
-
-        if (campaign.users.any { it.id == user.id }) {
-            throw BadRequestException("User already in campaign")
-        }
-
-        campaign.addUser(user)
-        val updatedCampaign = campaignRepository.save(campaign)
-        
-        logger.info { "User ${user.id} added to campaign ${campaign.campaignId}" }
-        return updatedCampaign.toResponse()
-    }
-
-    fun removeUserFromCampaign(request: CampaignUserRequest): CampaignResponse {
-        val campaign = campaignRepository.findByCampaignIdWithUsers(request.campaignId)
-            .orElseThrow { ResourceNotFoundException("Campaign not found") }
-
-        val user = userRepository.findById(request.userId)
-            .orElseThrow { ResourceNotFoundException("User not found") }
-
-        if (campaign.users.none { it.id == user.id }) {
-            throw BadRequestException("User not in campaign")
-        }
-
-        campaign.removeUser(user)
-        val updatedCampaign = campaignRepository.save(campaign)
-        
-        logger.info { "User ${user.id} removed from campaign ${campaign.campaignId}" }
-        return updatedCampaign.toResponse()
-    }
 }
 
 fun Campaign.toResponse() = CampaignResponse(
     id = this.id!!,
     name = this.name,
     campaignId = this.campaignId,
-    users = this.users.map { it.toResponse() }
+    organizationId = this.organizationId,
 )

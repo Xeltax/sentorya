@@ -46,18 +46,6 @@ class CampaignController(
         return ResponseEntity.ok(campaign)
     }
 
-    @PutMapping("/addUser")
-    fun addUserToCampaign(@Valid @RequestBody request: CampaignUserRequest): ResponseEntity<CampaignResponse> {
-        val campaign = campaignService.addUserToCampaign(request)
-        return ResponseEntity.ok(campaign)
-    }
-
-    @PutMapping("/removeUser")
-    fun removeUserFromCampaign(@Valid @RequestBody request: CampaignUserRequest): ResponseEntity<CampaignResponse> {
-        val campaign = campaignService.removeUserFromCampaign(request)
-        return ResponseEntity.ok(campaign)
-    }
-
     @DeleteMapping("/{id}")
     fun deleteCampaign(@PathVariable id: String): ResponseEntity<Unit> {
         campaignService.deleteCampaign(id)

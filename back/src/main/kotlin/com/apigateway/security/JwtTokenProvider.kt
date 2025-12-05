@@ -23,7 +23,8 @@ class JwtTokenProvider(
         email: String,
         name: String,
         role: String,
-        userId: UUID
+        userId: UUID,
+        firstConnection: Boolean
     ): String {
         val now = Date()
         val expiryDate = Date(now.time + jwtExpiration)
@@ -34,6 +35,7 @@ class JwtTokenProvider(
             .claim("name", name)
             .claim("role", role)
             .claim("userId", userId)
+            .claim("firstConnection", firstConnection)
             .issuedAt(now)
             .expiration(expiryDate)
             .signWith(secretKey)
