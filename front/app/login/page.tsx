@@ -76,7 +76,7 @@ export default function Page() {
                         <p className={"text-gray-400 underline float-end my-3 cursor-pointer"}>Mot de passe oublié</p>
                         <button
                             type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 cursor-pointer"
+                            className="w-full bg-orange-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 cursor-pointer"
                         >
                             Se connecter
                         </button>
@@ -88,7 +88,7 @@ export default function Page() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1 }}
-                className="h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-r from-blue-400 to-blue-950 text-white"
+                className="h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-r from-orange-400 to-orange-800 text-white"
             >
                 <div className="container mx-16 px-4 py-8">
                     <h1 className="text-4xl font-bold mb-4 text-center">Espace client Sentorya</h1>

@@ -79,6 +79,7 @@ export default function Page() {
     const clickedEmails = allResults.filter(r => r.status === 'Clicked' || r.status === 'Submitted Data').length;
     const reportedEmails = allResults.filter(r => r.reported).length;
     const openedEmails = allResults.filter(r => ['Email Opened', 'Clicked', 'Submitted Data'].includes(r.status)).length;
+    const [filteredResult , setFilteredResult] = useState<any[]>([]);
 
     // Données pour les graphiques
     const statusDistribution = [
@@ -124,6 +125,19 @@ export default function Page() {
             default: return 'secondary';
         }
     };
+
+    const filterUserByStatusAndCampain = (status: string) => {
+        let filtered: any[] = [];
+        mockCampaigns.forEach(campaign => {
+            const results = campaign.results.filter(r => {
+                if (status === 'all') return true;
+                if (status === 'Reported') return r.reported;
+                return r.status === status;
+            });
+            filtered = [...filtered, ...results];
+        });
+        setFilteredResult(filtered);
+    }
 
     return (
         <div className="p-6 space-y-6 min-h-screen w-full">
@@ -312,23 +326,23 @@ export default function Page() {
 
                                         <CardContent>
                                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                                                <div className="text-center">
+                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatus('all')}>
                                                     <div className="text-2xl font-bold">{campaign.results.length}</div>
                                                     <div className="text-sm text-gray-500">Emails Envoyés</div>
                                                 </div>
-                                                <div className="text-center">
+                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatus('Email Opened')}>
                                                     <div className="text-2xl font-bold text-green-600">
                                                         {campaign.results.filter(r => ['Email Opened', 'Clicked', 'Submitted Data'].includes(r.status)).length}
                                                     </div>
                                                     <div className="text-sm text-gray-500">Ouverts</div>
                                                 </div>
-                                                <div className="text-center">
+                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatus('Clicked')}>
                                                     <div className="text-2xl font-bold text-orange-600">
                                                         {campaign.results.filter(r => ['Clicked', 'Submitted Data'].includes(r.status)).length}
                                                     </div>
                                                     <div className="text-sm text-gray-500">Cliqués</div>
                                                 </div>
-                                                <div className="text-center">
+                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatus('Reported')}>
                                                     <div className="text-2xl font-bold text-blue-600">
                                                         {campaign.results.filter(r => r.reported).length}
                                                     </div>
@@ -340,7 +354,7 @@ export default function Page() {
                                             <div className="space-y-2">
                                                 <h4 className="font-semibold">Détails des résultats:</h4>
                                                 <div className="grid gap-2">
-                                                    {campaign.results.slice(0, 5).map(result => (
+                                                    {filteredResult.map(result => (
                                                         <div key={result.id} className="flex justify-between items-center p-2 bg-secondary rounded">
                                                             <div>
                                                                 <span className="font-medium">{result.first_name} {result.last_name}</span>
