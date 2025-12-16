@@ -10,6 +10,7 @@ import {ROUTES} from "@/utils/routes";
 import {toast} from "sonner";
 import {User} from "@/types/User";
 import ConfirmUserCreateDialog from "@/components/Popup/ConfirmUserCreateDialog/confirmUserCreateDialog";
+import {OrganizationsWithMembers} from "@/types/OrganizationsWithMembers";
 
 type OrganizationFormData = {
     email: string;
@@ -19,7 +20,7 @@ type OrganizationFormData = {
     ownerId?: string;
 }
 
-const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void, users : User[]}) => {
+const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void, users : User[], createOrganization : (organization : OrganizationsWithMembers) => void}) => {
     const [formData, setFormData] = useState<OrganizationFormData>()
     const form = useForm<OrganizationFormData>();
     
@@ -30,6 +31,9 @@ const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void
             props.toggle()
             console.log("Orga created successfully:", response);
             form.reset();
+            const responseData = {...response.data.organization, member: [response.data.members[0].email]};
+            console.log(responseData);
+            props.createOrganization(responseData);
             toast.success("Création de l'entreprise réussie !");
 
         } catch (error) {

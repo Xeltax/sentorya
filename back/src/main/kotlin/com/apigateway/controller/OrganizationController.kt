@@ -1,5 +1,6 @@
 package com.apigateway.controller
 
+import com.apigateway.dto.OrganizationsWithMembersResponse
 import com.apigateway.dto.addMemberDTO
 import com.apigateway.entity.OrganizationRole
 import com.apigateway.entity.Organizations
@@ -55,18 +56,25 @@ class OrganizationController {
 
     @PostMapping("")
     @PreAuthorize("hasRole('ADMIN')")
-    fun createOrganization(@RequestBody organization: Organizations): ResponseEntity<Organizations> {
+    fun createOrganization(@RequestBody organization: Organizations): ResponseEntity<OrganizationsWithMembersResponse> {
         val newOrganization = organizationRepository.save(organization)
+        val ownerUser = userRepository.findById(newOrganization.ownerId)
+            .orElseThrow { Exception("Owner user not found") }
 
         val ownerAsMember = com.apigateway.entity.OrganizationMember(
             organizationId = newOrganization.id!!,
-            userId = newOrganization.ownerId,
+            userId = ownerUser.id!!,
             role = OrganizationRole.OWNER
         )
 
         organizationMemberRepository.save(ownerAsMember)
 
-        return ResponseEntity.ok(newOrganization)
+        val response = OrganizationsWithMembersResponse(
+            organization = newOrganization,
+            members = listOf(ownerUser)
+        )
+
+        return ResponseEntity.ok(response)
     }
 
     @PutMapping("/add-member")

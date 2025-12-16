@@ -1,7 +1,9 @@
 package com.apigateway.dto
 
 import com.apigateway.entity.OrganizationRole
+import com.apigateway.entity.Organizations
 import com.apigateway.entity.Role
+import com.apigateway.entity.User
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -101,4 +103,9 @@ data class addMemberDTO(
 
 data class changePasswordDTO(
     val password: String
+)
+
+data class OrganizationsWithMembersResponse(
+    val organization: Organizations,
+    val members: List<User>
 )

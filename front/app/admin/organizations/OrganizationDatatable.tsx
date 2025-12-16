@@ -20,6 +20,7 @@ const OrganizationDatatable = ({ initialOrganizations, users }: OrganizationsDat
 
     const tableColumns = columns(users);
 
+    console.log("Rendering OrganizationDatatable with organizations:", organizations);
 
     return (
         <>
@@ -36,7 +37,10 @@ const OrganizationDatatable = ({ initialOrganizations, users }: OrganizationsDat
             <DataTableWithSearch columns={tableColumns} data={organizations} />
 
             {openDialog &&
-                <CreateOrganizationDialog isOpen={openDialog} toggle={() => setOpenDialog(!openDialog)} users={users}/>
+                <CreateOrganizationDialog isOpen={openDialog} toggle={() => setOpenDialog(!openDialog)} users={users} createOrganization={(organization) => {
+                    console.log("Adding organization:", organization);
+                    setOrganizations([...organizations, organization]);
+                }}/>
             }
         </>
     );
