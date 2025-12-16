@@ -7,6 +7,7 @@ import com.apigateway.entity.User
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import java.time.LocalDateTime
 import java.util.UUID
 
 // ===== Auth DTOs =====
@@ -72,12 +73,23 @@ data class CreateCampaignRequest(
     @field:NotBlank(message = "L'ID de campagne est requis")
     val campaignId: String,
 
-    val organizationId: UUID
+    val organizationId: UUID,
+
+    val createInGoPhish: Boolean = false,
+    val templateName: String? = "Default Template",
+    val pageName: String? = "Default Page",
+    val smtpProfileName: String? = null,
+    val phishingUrl: String? = null,
+    val launchDate: LocalDateTime? = null
 )
 
 data class UpdateCampaignRequest(
     val name: String? = null,
-    val campaignId: String? = null
+    val campaignId: String? = null,
+    val templateName: String? = null,
+    val pageName: String? = null,
+    val smtpProfileName: String? = null,
+    val phishingUrl: String? = null
 )
 
 data class CampaignUserRequest(
@@ -92,7 +104,13 @@ data class CampaignResponse(
     val id: UUID,
     val name: String,
     val campaignId: String,
-    val organizationId: UUID
+    val organizationId: UUID,
+    val goPhishCampaignId: Long? = null,
+    val goPhishGroupId: Long? = null,
+    val templateName: String? = null,
+    val pageName: String? = null,
+    val smtpProfileName: String? = null,
+    val phishingUrl: String? = null
 )
 
 data class addMemberDTO(

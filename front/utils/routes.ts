@@ -15,6 +15,17 @@ export const ROUTES = {
         CAMPAIGN : {
             CRUD : "/campaign",
             GET_BY_ID : (id: string) => `/campaign/${id}`,
+            GET_RESULTS : (id: string) => `/campaign/${id}/results`,
+        },
+        GOPHISH : {
+            TEMPLATES : "/gophish/templates",
+            PAGES : "/gophish/pages",
+            SMTP : "/gophish/smtp",
+            GROUPS : "/gophish/groups",
+            CAMPAIGNS : "/gophish/campaigns",
+            CAMPAIGN_BY_ID : (id: number) => `/gophish/campaigns/${id}`,
+            CAMPAIGN_SUMMARY : (id: number) => `/gophish/campaigns/${id}/summary`,
+            COMPLETE_CAMPAIGN : (id: number) => `/gophish/campaigns/${id}/complete`,
         },
         AUTH : {
             CHANGE_PASSWORD_FIRST_LOGIN : "/auth/change-password",

@@ -6,6 +6,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/campaign")
@@ -26,7 +27,7 @@ class CampaignController(
     }
 
     @GetMapping("/{id}")
-    fun getCampaignById(@PathVariable id: String): ResponseEntity<CampaignResponse> {
+    fun getCampaignById(@PathVariable id: UUID): ResponseEntity<CampaignResponse> {
         val campaign = campaignService.getById(id)
         return ResponseEntity.ok(campaign)
     }
@@ -47,8 +48,14 @@ class CampaignController(
     }
 
     @DeleteMapping("/{id}")
-    fun deleteCampaign(@PathVariable id: String): ResponseEntity<Unit> {
+    fun deleteCampaign(@PathVariable id: UUID): ResponseEntity<Unit> {
         campaignService.deleteCampaign(id)
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/{id}/results")
+    fun getCampaignResults(@PathVariable id: UUID): ResponseEntity<Any> {
+        val results = campaignService.getCampaignResults(id)
+        return ResponseEntity.ok(results)
     }
 }

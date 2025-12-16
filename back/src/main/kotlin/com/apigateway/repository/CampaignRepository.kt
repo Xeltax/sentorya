@@ -9,6 +9,8 @@ import java.util.UUID
 
 @Repository
 interface CampaignRepository : JpaRepository<Campaign, String> {
+
+    fun findById(id: UUID?): Optional<Campaign>
     fun findByCampaignId(campaignId: String): Optional<Campaign>
     fun existsByCampaignId(campaignId: String): Boolean
 

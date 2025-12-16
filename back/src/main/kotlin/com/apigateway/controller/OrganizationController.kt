@@ -9,6 +9,7 @@ import com.apigateway.entity.User
 import com.apigateway.repository.OrganizationMemberRepository
 import com.apigateway.repository.OrganizationRepository
 import com.apigateway.repository.UserRepository
+import com.apigateway.service.CampaignService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -34,6 +35,8 @@ class OrganizationController {
     lateinit var organizationMemberRepository: OrganizationMemberRepository
     @Autowired
     lateinit var userRepository: UserRepository
+    @Autowired
+    lateinit var campaignService: CampaignService
 
     @GetMapping("/{id}")
     fun getOrganizationById(@PathVariable id: UUID): ResponseEntity<Organizations> {
@@ -128,6 +131,12 @@ class OrganizationController {
                 role = data.role!!
             )
             organizationMemberRepository.save(newMember)
+
+            try {
+                campaignService.syncOrganizationCampaigns(organization.id!!)
+            } catch (e: Exception) {
+                println("Erreur lors de la synchronisation GoPhish: ${e.message}")
+            }
         }
 
         return ResponseEntity.ok("Membre ajouté avec succès.")
@@ -152,6 +161,12 @@ class OrganizationController {
                 return ResponseEntity.badRequest().body("Impossible de supprimer le propriétaire de l'organisation.")
             }
             organizationMemberRepository.delete(existingMember)
+
+            try {
+                campaignService.syncOrganizationCampaigns(organization.id!!)
+            } catch (e: Exception) {
+                println("Erreur lors de la synchronisation GoPhish: ${e.message}")
+            }
         }
 
         return ResponseEntity.ok("Membre supprimé avec succès.")

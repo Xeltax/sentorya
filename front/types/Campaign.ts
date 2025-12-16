@@ -5,4 +5,25 @@ export type Campaign = {
     name : string,
     campaignId : string,
     organizationId : string,
+
+    goPhishCampaignId?: number;
+    goPhishGroupId?: number;
+    templateName?: string;
+    pageName?: string;
+    smtpProfileName?: string;
+    phishingUrl?: string;
+}
+
+export interface CreateCampaignRequest {
+    name: string;
+    campaignId: string;
+    organizationId: string;
+
+
+    createInGoPhish: boolean;
+    templateName?: string;
+    pageName?: string;
+    smtpProfileName?: string;
+    phishingUrl?: string;
+    launchDate?: string;
 }

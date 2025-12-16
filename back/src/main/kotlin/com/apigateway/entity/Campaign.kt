@@ -17,6 +17,24 @@ data class Campaign(
     val campaignId: String,
 
     val organizationId : UUID,
+
+    @Column(name = "gophish_campaign_id")
+    var goPhishCampaignId: Long? = null,
+
+    @Column(name = "gophish_group_id")
+    var goPhishGroupId: Long? = null,
+
+    @Column(name = "gophish_template_name")
+    var goPhishTemplateName: String? = null,
+
+    @Column(name = "gophish_page_name")
+    var goPhishPageName: String? = null,
+
+    @Column(name = "gophish_smtp_name")
+    var goPhishSmtpName: String? = null,
+
+    @Column(name = "phishing_url")
+    var phishingUrl: String? = null,
 ) {
 
     override fun equals(other: Any?): Boolean {
