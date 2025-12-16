@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem
 } from "@/components/ui/sidebar"
-import {DoorOpen, Home, Moon, Settings, Sun, User} from "lucide-react";
+import {DoorOpen, Home, Moon, Settings, Sun, User, Shield} from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "../ui/dropdown-menu";
 import {Button } from "../ui/button";
 import {useTheme} from "next-themes";
@@ -31,11 +31,19 @@ const items = [
 export function DashboardSideBar() {
     const { setTheme } = useTheme()
     const router = useRouter();
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const handleLogout = () => {
         document.cookie = "JWT=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         window.location.href = "/login"; // Redirect to login page after logout
     }
+
+    useEffect(() => {
+        const user : UserJWT = jwtDecode(getCookie("JWT") as string);
+        if (user.role === "ADMIN") {
+            setIsAdmin(true);
+        }
+    }, []);
 
     return (
         <Sidebar>
@@ -93,6 +101,17 @@ export function DashboardSideBar() {
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
+                            {isAdmin &&
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton asChild>
+                                        <div onClick={() => handleLogout()} className={"cursor-pointer"}>
+
+                                            <Shield />
+                                            <span>Panel d&apos;administration</span>
+                                        </div>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            }
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
                                     <div onClick={() => router.push("/dashboard/profile")} className={"cursor-pointer"}>
