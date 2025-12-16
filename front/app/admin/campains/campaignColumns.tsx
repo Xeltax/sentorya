@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import {Campaign} from "@/types/Campaign";
 
-export const columns = (
+export const campaignColumns = (
     onCampaignUpdate: (campaign: Campaign) => void,
     onCampaignDelete: (campaignId: string) => void
 ): ColumnDef<Campaign>[] => [

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {columns} from "@/app/admin/organizations/columns";
+import {organizationColumns} from "@/app/admin/organizations/organizationColumns";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {DataTableWithSearch} from "@/components/Datatable/DatatableWithSearch";
@@ -18,19 +18,19 @@ const OrganizationDatatable = ({ initialOrganizations, users }: OrganizationsDat
     const [organizations, setOrganizations] = useState<OrganizationsWithMembers[]>(initialOrganizations);
     const [openDialog, setOpenDialog] = useState(false);
 
-    const tableColumns = columns(users);
+    const tableColumns = organizationColumns(users);
 
     console.log("Rendering OrganizationDatatable with organizations:", organizations);
 
     return (
         <>
             <Card className="mb-6 p-6">
-                <h1 className="text-2xl font-bold">Liste des organizations</h1>
+                <h1 className="text-2xl font-bold">Liste des entreprises</h1>
                 <p>
-                    Vous pouvez gérer les orgnizations ici. Cliquez sur les actions pour modifier ou supprimer une organizations ou bien ajouter en un.
+                    Vous pouvez gérer les entreprises ici. Cliquez sur les actions pour modifier ou supprimer une entreprise ou bien ajouter en un.
                 </p>
                 <Button className="w-fit" onClick={() => setOpenDialog(true)}>
-                    Ajouter une organization
+                    Ajouter une entreprise
                 </Button>
             </Card>
 

@@ -9,7 +9,7 @@ import {Eye, Pen, Trash, UserMinus, UserPlus} from "lucide-react";
 import OrganizationActionDatable from "@/components/Datatable/OrganizationActionDatable";
 import {OrganizationsWithMembers} from "@/types/OrganizationsWithMembers";
 
-export const columns = (
+export const organizationColumns = (
     users: User[]
 ): ColumnDef<OrganizationsWithMembers>[] => [
     {

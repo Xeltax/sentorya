@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { User } from "@/types/User";
 import UserActionsDatatable from "@/components/Datatable/UserActionsDatatable";
 
-export const columns = (
+export const userColumns = (
     onUserUpdate: (user: User) => void,
     onUserDelete: (userId: string) => void
 ): ColumnDef<User>[] => [

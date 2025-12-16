@@ -52,8 +52,14 @@ const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void
             <Dialog
                 open={props.isOpen}
                 onOpenChange={(open) => {
-                    props.toggle()
-                    form.reset()
+                    if (!open) {
+                        setTimeout(() => {
+                            props.toggle()
+                            form.reset()
+                        }, 0)
+                    } else {
+                        props.toggle()
+                    }
                 }}
             >
                 <DialogContent>

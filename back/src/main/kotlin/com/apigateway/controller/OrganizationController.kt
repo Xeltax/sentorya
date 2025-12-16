@@ -77,6 +77,22 @@ class OrganizationController {
         return ResponseEntity.ok(response)
     }
 
+    @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    fun updateOrganization(@RequestBody organization: Organizations): ResponseEntity<Organizations> {
+        val existingOrganization = organizationRepository.findById(organization.id!!)
+            .orElseThrow { Exception("Organization not found") }
+        val updatedOrganization = existingOrganization.copy(
+            name = organization.name,
+            email = organization.email,
+            address = organization.address,
+            phoneNumber = organization.phoneNumber,
+            ownerId = organization.ownerId
+        )
+        organizationRepository.save(updatedOrganization)
+        return ResponseEntity.ok(updatedOrganization)
+    }
+
     @PutMapping("/add-member")
     fun addMemberToOrganization(
         @RequestBody data : addMemberDTO

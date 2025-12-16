@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { DataTableWithSearch } from "@/components/Datatable/DatatableWithSearch";
 import { useForm } from "react-hook-form";
-import { columns } from "@/app/admin/campains/columns";
+import { campaignColumns } from "@/app/admin/campains/campaignColumns";
 import {ROUTES} from "@/utils/routes";
 import {toast} from "sonner";
 import Client from "@/utils/client";
@@ -65,7 +65,7 @@ const CampaignsDataTable = ({ initialCampaigns, allOrganizations }: CampaignsDat
         }
     };
 
-    const tableColumns = columns(handleCampaignUpdate, handleCampaignDelete);
+    const tableColumns = campaignColumns(handleCampaignUpdate, handleCampaignDelete);
 
     console.log(campaigns)
 

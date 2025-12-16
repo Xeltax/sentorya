@@ -147,7 +147,17 @@ const UserActionsDatatable = ({ data, onUserUpdate, onUserDelete }: UserActionsD
 
             <Dialog
                 open={openDialog !== ""}
-                onOpenChange={(open) => setOpenDialog(open ? openDialog : "")}
+                onOpenChange={(open) =>  {
+                    if (!open) {
+                        setTimeout(() => {
+                            setOpenDialog(open ? openDialog : "")
+                            form.reset()
+                        }, 0)
+                    } else {
+                        setOpenDialog(open ? openDialog : "")
+                    }
+                }
+            }
             >
                 {openDialog === "ViewUser" && (
                     <DialogContent>

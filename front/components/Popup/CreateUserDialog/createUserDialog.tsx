@@ -73,8 +73,14 @@ const CreateUserDialog = (props : {isOpen : boolean, toggle : () => void, handle
             <Dialog
             open={props.isOpen}
             onOpenChange={(open) => {
-                props.toggle()
-                form.reset()
+                if (!open) {
+                    setTimeout(() => {
+                        props.toggle()
+                        form.reset()
+                    }, 0)
+                } else {
+                    props.toggle()
+                }
             }}
             >
                 <DialogContent>
