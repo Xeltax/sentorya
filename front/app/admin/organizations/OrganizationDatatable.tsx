@@ -8,6 +8,7 @@ import {DataTableWithSearch} from "@/components/Datatable/DatatableWithSearch";
 import CreateOrganizationDialog from "@/components/Popup/CreateOrganizationDialog/createOrganizationDialog";
 import {User} from "@/types/User";
 import {OrganizationsWithMembers} from "@/types/OrganizationsWithMembers";
+import {OrganizationProvider, useOrganizations} from "@/components/context/OrganizationContext";
 
 interface OrganizationsDataTableProps {
     initialOrganizations: OrganizationsWithMembers[];
@@ -15,20 +16,24 @@ interface OrganizationsDataTableProps {
 }
 
 const OrganizationDatatable = ({ initialOrganizations, users }: OrganizationsDataTableProps) => {
-    const [organizations, setOrganizations] = useState<OrganizationsWithMembers[]>(initialOrganizations);
+    return (
+        <OrganizationProvider initialOrganizations={initialOrganizations}>
+            <OrganizationDatatableContent users={users} />
+        </OrganizationProvider>
+    );
+};
+
+const OrganizationDatatableContent = ({ users }: { users: User[] }) => {
+    const { organizations, addOrganization } = useOrganizations();
     const [openDialog, setOpenDialog] = useState(false);
 
     const tableColumns = organizationColumns(users);
-
-    console.log("Rendering OrganizationDatatable with organizations:", organizations);
 
     return (
         <>
             <Card className="mb-6 p-6">
                 <h1 className="text-2xl font-bold">Liste des entreprises</h1>
-                <p>
-                    Vous pouvez gérer les entreprises ici. Cliquez sur les actions pour modifier ou supprimer une entreprise ou bien ajouter en un.
-                </p>
+                <p>Vous pouvez gérer les entreprises ici...</p>
                 <Button className="w-fit" onClick={() => setOpenDialog(true)}>
                     Ajouter une entreprise
                 </Button>
@@ -36,12 +41,14 @@ const OrganizationDatatable = ({ initialOrganizations, users }: OrganizationsDat
 
             <DataTableWithSearch columns={tableColumns} data={organizations} />
 
-            {openDialog &&
-                <CreateOrganizationDialog isOpen={openDialog} toggle={() => setOpenDialog(!openDialog)} users={users} createOrganization={(organization) => {
-                    console.log("Adding organization:", organization);
-                    setOrganizations([...organizations, organization]);
-                }}/>
-            }
+            {openDialog && (
+                <CreateOrganizationDialog
+                    isOpen={openDialog}
+                    toggle={() => setOpenDialog(!openDialog)}
+                    users={users}
+                    createOrganization={addOrganization}
+                />
+            )}
         </>
     );
 };

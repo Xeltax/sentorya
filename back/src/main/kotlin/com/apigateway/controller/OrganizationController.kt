@@ -1,5 +1,6 @@
 package com.apigateway.controller
 
+import com.apigateway.dto.EditOrganizationDTO
 import com.apigateway.dto.OrganizationsWithMembersResponse
 import com.apigateway.dto.addMemberDTO
 import com.apigateway.entity.OrganizationRole
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -79,18 +81,30 @@ class OrganizationController {
 
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
-    fun updateOrganization(@RequestBody organization: Organizations): ResponseEntity<Organizations> {
-        val existingOrganization = organizationRepository.findById(organization.id!!)
+    fun updateOrganization(@RequestBody data: EditOrganizationDTO): ResponseEntity<Organizations> {
+        val existingOrganization = organizationRepository.findById(data.id)
             .orElseThrow { Exception("Organization not found") }
         val updatedOrganization = existingOrganization.copy(
-            name = organization.name,
-            email = organization.email,
-            address = organization.address,
-            phoneNumber = organization.phoneNumber,
-            ownerId = organization.ownerId
+            name = data.name,
+            email = data.email,
+            address = data.address,
+            phoneNumber = data.phoneNumber,
         )
         organizationRepository.save(updatedOrganization)
         return ResponseEntity.ok(updatedOrganization)
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    fun deleteOrganization(@PathVariable id: UUID): ResponseEntity<String> {
+        val organization = organizationRepository.findById(id)
+            .orElseThrow { Exception("Organization not found") }
+        organizationMemberRepository.findByOrganizationId(organization.id!!).forEach { member ->
+            organizationMemberRepository.delete(member)
+        }
+        organizationRepository.delete(organization)
+
+        return ResponseEntity.ok("Organization deleted successfully.")
     }
 
     @PutMapping("/add-member")

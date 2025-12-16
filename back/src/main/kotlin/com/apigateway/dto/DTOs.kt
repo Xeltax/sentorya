@@ -109,3 +109,11 @@ data class OrganizationsWithMembersResponse(
     val organization: Organizations,
     val members: List<User>
 )
+
+data class EditOrganizationDTO(
+    val id: UUID,
+    val name: String,
+    val address: String?,
+    val email: String,
+    val phoneNumber: String?
+)

@@ -2,51 +2,43 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} fro
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useState} from "react";
 import {useForm} from "react-hook-form";
-import Client from "@/utils/client";
 import {ROUTES} from "@/utils/routes";
+import Client from "@/utils/client";
 import {toast} from "sonner";
-import {User} from "@/types/User";
-import ConfirmUserCreateDialog from "@/components/Popup/ConfirmUserCreateDialog/confirmUserCreateDialog";
-import {OrganizationsWithMembers} from "@/types/OrganizationsWithMembers";
 
-type OrganizationFormData = {
-    email: string;
+type EditOrganizationFormData = {
+    email?: string;
     name: string;
     phoneNumber?: string;
     address?: string;
-    ownerId?: string;
 }
 
-const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void, users : User[], createOrganization : (organization : OrganizationsWithMembers) => void}) => {
-    const [formData, setFormData] = useState<OrganizationFormData>()
-    const form = useForm<OrganizationFormData>();
-    
-    const createOrganisation = async (formData: OrganizationFormData) => {
-        try {
-            const response = await Client.post(ROUTES.BACK.ORGANIZATION.CRUD, formData);
+const EditOrganizationDialog = (props : {isOpen: boolean, toggle : () => void, organization : Organizations, callback : (data : Organizations) => void}) => {
+    const [formData, setFormData] = useState<EditOrganizationFormData>()
+    const form = useForm<EditOrganizationFormData>();
 
-            props.toggle()
-            console.log("Orga created successfully:", response);
-            form.reset();
-            const responseData = {...response.data.organization, member: [response.data.members[0].email]};
-            console.log(responseData);
-            props.createOrganization(responseData);
-            toast.success("Création de l'entreprise réussie !");
-
-        } catch (error) {
-            console.error("Error updating user:", error);
-            toast.error("Echec lors de la création de l'entreprise. Veuillez réessayer.")
-        }
-    }
-
-    const onSubmit = async (formData: OrganizationFormData) => {
+    const onSubmit = async (formData: EditOrganizationFormData) => {
         setFormData(formData);
-        await createOrganisation(formData);
+        await editOrganisation(formData);
     };
 
+    const editOrganisation = async (formData: EditOrganizationFormData) => {
+        try {
+            const response = await Client.put(ROUTES.BACK.ORGANIZATION.CRUD, {...formData, id: props.organization.id});
+
+            props.toggle()
+            console.log("Orga edited successfully:", response);
+            form.reset();
+            props.callback(response.data);
+            toast.success("Modification de l'entreprise réussie !");
+        } catch (error) {
+            console.error("Error updating organization:", error);
+            toast.error("Echec lors de la modification de l'entreprise. Veuillez réessayer.")
+        }
+    }
+    
     return (
         <>
             <Dialog
@@ -64,14 +56,14 @@ const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Création d&apos;une organization</DialogTitle>
+                        <DialogTitle>Modification de l&apos;entreprise &#34;{props.organization.name}&#34;</DialogTitle>
                         <DialogDescription asChild>
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                                     <FormField
                                         control={form.control}
                                         name="name"
-                                        defaultValue=""
+                                        defaultValue={props.organization.name}
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Nom</FormLabel>
@@ -86,7 +78,7 @@ const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void
                                         control={form.control}
                                         name="email"
                                         rules={{ required: "L'email est requis" }}
-                                        defaultValue=""
+                                        defaultValue={props.organization.email}
                                         render={({ field }) => (
                                             <FormItem aria-required={true}>
                                                 <FormLabel>Email</FormLabel>
@@ -100,7 +92,8 @@ const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void
                                     <FormField
                                         control={form.control}
                                         name="address"
-                                        defaultValue=""
+                                        // @ts-expect-error("address can be null")
+                                        defaultValue={props.organization.address}
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Adresse de l&apos;entreprise</FormLabel>
@@ -114,7 +107,8 @@ const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void
                                     <FormField
                                         control={form.control}
                                         name="phoneNumber"
-                                        defaultValue=""
+                                        // @ts-expect-error("phoneNumber can be null")
+                                        defaultValue={props.organization.phoneNumber}
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Numéro de téléphone</FormLabel>
@@ -125,34 +119,8 @@ const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void
                                             </FormItem>
                                         )}
                                     />
-                                    <FormField
-                                        control={form.control}
-                                        name="ownerId"
-                                        defaultValue=""
-                                        rules={{ required: "Le responsable est requis" }}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Responsable de l&apos;entreprise</FormLabel>
-                                                <FormControl>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Sélectionner un responsable" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {props.users.map((user) => (
-                                                                <SelectItem key={user.id} value={user.id}>
-                                                                    {user.email}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
                                     <Button type="submit">
-                                        {"Créer l'organization"}
+                                        {"Modifier l'entreprise"}
                                     </Button>
                                 </form>
                             </Form>
@@ -164,4 +132,4 @@ const CreateOrganizationDialog = (props : {isOpen : boolean, toggle : () => void
     )
 }
 
-export default CreateOrganizationDialog;
+export default EditOrganizationDialog;
