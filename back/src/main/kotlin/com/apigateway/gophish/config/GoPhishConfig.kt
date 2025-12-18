@@ -12,12 +12,12 @@ data class GoPhishConfig(
     /**
      * URL de l'instance GoPhish (ex: https://gophish.example.com)
      */
-    var apiUrl: String = "",
+    var apiUrl: String = "http://127.0.0.1:3333",
 
     /**
      * Clé API GoPhish
      */
-    var apiKey: String = "",
+    var apiKey: String = "b4ed4709881d80ccc1f3046600cf48145a1e6129abefaf88b2b0615b78dd29bf",
 
     /**
      * Timeout pour les requêtes HTTP en millisecondes
@@ -37,5 +37,5 @@ data class GoPhishConfig(
     /**
      * Activer/désactiver la vérification SSL (pour dev uniquement)
      */
-    var verifySsl: Boolean = true
+    var verifySsl: Boolean = false
 )

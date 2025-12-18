@@ -39,5 +39,8 @@ data class Organizations (
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = true)
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
+
+    @Column(name = "goPhishGroupId", nullable = false)
+    var goPhishGroupId: Long? = null,
 )

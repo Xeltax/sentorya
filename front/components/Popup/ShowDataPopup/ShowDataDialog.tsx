@@ -1,6 +1,12 @@
-import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import {DialogBody} from "next/dist/client/components/react-dev-overlay/ui/components/dialog";
 
 const ShowDataDialog = (props : { isOpen: boolean, toggle : () => void, title : string, data: string }) => {
     return (
@@ -12,9 +18,9 @@ const ShowDataDialog = (props : { isOpen: boolean, toggle : () => void, title : 
                 <DialogHeader>
                     <DialogTitle>{props.title}</DialogTitle>
                 </DialogHeader>
-                <DialogBody>
+                <DialogDescription>
                     <pre className="max-h-96 overflow-auto">{props.data}</pre>
-                </DialogBody>
+                </DialogDescription>
                 <DialogFooter>
                     <Button onClick={props.toggle}>Fermer</Button>
                 </DialogFooter>

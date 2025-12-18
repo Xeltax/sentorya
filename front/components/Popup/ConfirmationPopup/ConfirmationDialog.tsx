@@ -1,5 +1,11 @@
-import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
-import {DialogBody} from "next/dist/client/components/react-dev-overlay/ui/components/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 
 const ConfirmationDialog = (props : { isOpen: boolean, toggle : () => void, message: string; onConfirm: () => void }) => {
@@ -12,9 +18,9 @@ const ConfirmationDialog = (props : { isOpen: boolean, toggle : () => void, mess
                 <DialogHeader>
                     <DialogTitle>Confirmation</DialogTitle>
                 </DialogHeader>
-                <DialogBody>
-                    <p>{props.message}</p>
-                </DialogBody>
+                <DialogDescription>
+                    {props.message}
+                </DialogDescription>
                 <DialogFooter>
                     <Button onClick={props.toggle}>Annuler</Button>
                     <Button variant={"destructive"} onClick={() => {

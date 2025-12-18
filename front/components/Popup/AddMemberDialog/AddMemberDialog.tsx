@@ -10,6 +10,7 @@ import {OrganizationRole} from "@/types/OrganizationRole";
 import {ROUTES} from "@/utils/routes";
 import Client from "@/utils/client";
 import {toast} from "sonner";
+import {useOrganizations} from "@/components/context/OrganizationContext";
 
 type AddMemberFormData = {
     organizationId: string;
@@ -19,6 +20,7 @@ type AddMemberFormData = {
 
 const AddMemberDialog = (props: {isOpen: boolean, toggle : () => void, organization : Organizations, users : User[]}) => {
     const [formData, setFormData] = useState<AddMemberFormData>()
+    const {addMember} = useOrganizations();
     const form = useForm<AddMemberFormData>();
 
     const onSubmit = async (formData: AddMemberFormData) => {
@@ -27,7 +29,7 @@ const AddMemberDialog = (props: {isOpen: boolean, toggle : () => void, organizat
 
         try {
             const response = await Client.put(ROUTES.BACK.ORGANIZATION.ADD_MEMBER, formData);
-
+            addMember(props.organization.id, response.data);
             props.toggle()
             console.log("Member added successfully:", response);
             form.reset();

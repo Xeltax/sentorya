@@ -6,8 +6,11 @@ import com.apigateway.gophish.dto.*
 import com.apigateway.gophish.exception.GoPhishException
 import com.apigateway.gophish.exception.GoPhishNotFoundException
 import com.apigateway.repository.OrganizationMemberRepository
+import com.apigateway.repository.OrganizationRepository
 import com.apigateway.repository.UserRepository
 import mu.KotlinLogging
+import org.hibernate.annotations.NotFound
+import org.springframework.data.crossstore.ChangeSetPersister
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -25,44 +28,52 @@ private val logger = KotlinLogging.logger {}
 class GoPhishService(
     private val goPhishClient: GoPhishClient,
     private val userRepository: UserRepository,
+    private val organizationRepository: OrganizationRepository,
     private val organizationMemberRepository: OrganizationMemberRepository
 ) {
 
     // ==================== GROUPS ====================
 
     /**
+     * Récupère tous les groupes GoPhish
+     */
+    fun getAllGroups(): List<GoPhishGroup> {
+        return goPhishClient.getGroups()
+    }
+
+    /**
      * Crée un groupe GoPhish à partir des membres d'une organisation
      */
-    fun createGroupFromOrganization(organizationId: UUID, groupName: String): GoPhishGroup {
+    fun createOrGetGroupFromOrganization(organizationId: UUID, groupName: String): GoPhishGroup {
         logger.info { "Création du groupe GoPhish pour l'organisation $organizationId: $groupName" }
 
+        // Vérifier si le groupe existe déjà
+        val existingGroups = getAllGroups()
+        val existingGroup = existingGroups.find { it.name == groupName }
+        if (existingGroup != null) {
+            logger.info { "Le groupe GoPhish '$groupName' existe déjà avec l'ID ${existingGroup.id}" }
+            return existingGroup
+        }
         // Récupérer les membres de l'organisation
         val members = organizationMemberRepository.findByOrganizationId(organizationId)
-
-        if (members.isEmpty()) {
-            throw IllegalArgumentException("L'organisation ne contient aucun membre")
-        }
-
         // Convertir les membres en targets GoPhish
         val targets = members.mapNotNull { member ->
             userRepository.findById(member.userId).map { user ->
                 user.toGoPhishTarget()
             }.orElse(null)
         }
-
-        // Créer le groupe dans GoPhish
+        // Créer le groupe
         val request = CreateGoPhishGroupRequest(
             name = groupName,
             targets = targets
         )
-
         return goPhishClient.createGroup(request)
     }
 
     /**
      * Met à jour un groupe GoPhish existant avec les membres actuels d'une organisation
      */
-    fun updateGroupFromOrganization(goPhishGroupId: Long, organizationId: UUID): GoPhishGroup {
+    fun updateGroupFromOrganization(goPhishGroupId: Long, organizationId: UUID, newName : String?): GoPhishGroup {
         logger.info { "Mise à jour du groupe GoPhish $goPhishGroupId pour l'organisation $organizationId" }
 
         // Récupérer le groupe existant
@@ -80,6 +91,10 @@ class GoPhishService(
 
         // Mettre à jour le groupe
         val updatedGroup = existingGroup.copy(targets = targets)
+
+        if (newName != null) {
+            updatedGroup.name = newName
+        }
 
         return goPhishClient.updateGroup(goPhishGroupId, updatedGroup)
     }
@@ -121,13 +136,6 @@ class GoPhishService(
         val updatedGroup = group.copy(targets = updatedTargets)
 
         goPhishClient.updateGroup(goPhishGroupId, updatedGroup)
-    }
-
-    /**
-     * Récupère tous les groupes GoPhish
-     */
-    fun getAllGroups(): List<GoPhishGroup> {
-        return goPhishClient.getGroups()
     }
 
     /**
@@ -291,9 +299,13 @@ class GoPhishService(
         logger.info { "Création d'une campagne GoPhish complète: $campaignName" }
 
         try {
+            val organizations = organizationRepository.findById(organizationId).orElseThrow {
+                ChangeSetPersister.NotFoundException()
+            }
             // 1. Créer ou récupérer le groupe
-            val groupName = "Group_${organizationId}_${System.currentTimeMillis()}"
-            val group = createGroupFromOrganization(organizationId, groupName)
+            val group = createOrGetGroupFromOrganization(organizationId, organizations.name)
+
+            println("GoPhish Group ID: ${group.id}")
 
             // 2. Récupérer ou créer le template
             val template = getOrCreateDefaultTemplate(templateName)
@@ -382,7 +394,7 @@ class GoPhishService(
 
         goPhishGroupIds.forEach { groupId ->
             try {
-                updateGroupFromOrganization(groupId, organizationId)
+                updateGroupFromOrganization(groupId, organizationId, null)
             } catch (e: Exception) {
                 logger.error(e) { "Erreur lors de la synchronisation du groupe $groupId" }
             }

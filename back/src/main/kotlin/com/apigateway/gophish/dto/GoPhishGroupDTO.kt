@@ -11,7 +11,7 @@ data class GoPhishGroup(
     val id: Long? = null,
 
     @JsonProperty("name")
-    val name: String,
+    var name: String,
 
     @JsonProperty("targets")
     val targets: List<GoPhishTarget>,

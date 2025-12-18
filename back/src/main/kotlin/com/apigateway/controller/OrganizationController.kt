@@ -6,6 +6,7 @@ import com.apigateway.dto.addMemberDTO
 import com.apigateway.entity.OrganizationRole
 import com.apigateway.entity.Organizations
 import com.apigateway.entity.User
+import com.apigateway.gophish.service.GoPhishService
 import com.apigateway.repository.OrganizationMemberRepository
 import com.apigateway.repository.OrganizationRepository
 import com.apigateway.repository.UserRepository
@@ -37,6 +38,8 @@ class OrganizationController {
     lateinit var userRepository: UserRepository
     @Autowired
     lateinit var campaignService: CampaignService
+    @Autowired
+    lateinit var goPhishService: GoPhishService
 
     @GetMapping("/{id}")
     fun getOrganizationById(@PathVariable id: UUID): ResponseEntity<Organizations> {
@@ -62,7 +65,18 @@ class OrganizationController {
     @PostMapping("")
     @PreAuthorize("hasRole('ADMIN')")
     fun createOrganization(@RequestBody organization: Organizations): ResponseEntity<OrganizationsWithMembersResponse> {
-        val newOrganization = organizationRepository.save(organization)
+        val newOrganization = Organizations(
+            id = UUID.randomUUID(),
+            name = organization.name,
+            email = organization.email,
+            address = organization.address,
+            phoneNumber = organization.phoneNumber,
+            ownerId = organization.ownerId,
+            goPhishGroupId = null,
+            createdAt = null,
+            updatedAt = null,
+        )
+        println("Creating organization with id: ${newOrganization.id}")
         val ownerUser = userRepository.findById(newOrganization.ownerId)
             .orElseThrow { Exception("Owner user not found") }
 
@@ -72,7 +86,13 @@ class OrganizationController {
             role = OrganizationRole.OWNER
         )
 
+
         organizationMemberRepository.save(ownerAsMember)
+        val goPhishGroup = goPhishService.createOrGetGroupFromOrganization(newOrganization.id!!, newOrganization.name)
+        println("Created GoPhish group with ID: ${goPhishGroup} for organization ID: ${newOrganization.id}")
+
+        newOrganization.goPhishGroupId = goPhishGroup.id
+        organizationRepository.save(newOrganization)
 
         val response = OrganizationsWithMembersResponse(
             organization = newOrganization,
@@ -93,6 +113,7 @@ class OrganizationController {
             address = data.address,
             phoneNumber = data.phoneNumber,
         )
+        goPhishService.updateGroupFromOrganization(existingOrganization.goPhishGroupId!!, existingOrganization.id!!, data.name)
         organizationRepository.save(updatedOrganization)
         return ResponseEntity.ok(updatedOrganization)
     }
@@ -131,6 +152,7 @@ class OrganizationController {
                 role = data.role!!
             )
             organizationMemberRepository.save(newMember)
+            goPhishService.addUserToGroup(organization.goPhishGroupId!!, data.userId)
 
             try {
                 campaignService.syncOrganizationCampaigns(organization.id!!)
@@ -148,10 +170,12 @@ class OrganizationController {
     ): ResponseEntity<String> {
         val organization = organizationRepository.findById(data.organizationId)
             .orElseThrow { Exception("Organization not found") }
+        val user = userRepository.findById(data.userId)
+            .orElseThrow { Exception("User not found") }
 
         val existingMember = organizationMemberRepository.findByOrganizationIdAndUserId(
             organization.id!!,
-            data.userId
+            user.id!!
         )
 
         if (existingMember == null) {
@@ -161,6 +185,7 @@ class OrganizationController {
                 return ResponseEntity.badRequest().body("Impossible de supprimer le propriétaire de l'organisation.")
             }
             organizationMemberRepository.delete(existingMember)
+            goPhishService.removeUserFromGroup(organization.goPhishGroupId!!, user.email)
 
             try {
                 campaignService.syncOrganizationCampaigns(organization.id!!)

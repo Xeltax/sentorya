@@ -39,6 +39,7 @@ class GoPhishClient(
     private inline fun <reified T> get(endpoint: String): T {
         return executeWithRetry {
             val url = "${config.apiUrl}${endpoint}"
+            println()
             logger.debug { "GET $url" }
 
             try {
