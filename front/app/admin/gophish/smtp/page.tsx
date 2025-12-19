@@ -71,7 +71,7 @@ export default function SMTPConfigPage() {
                     <div>
                         <h1 className="text-3xl font-bold">Profils SMTP</h1>
                         <p className="text-muted-foreground">
-                            Configurez vos serveurs d'envoi d'emails
+                            Configurez vos serveurs d&apos;envoi d&apos;emails
                         </p>
                     </div>
                 </div>
@@ -100,8 +100,8 @@ export default function SMTPConfigPage() {
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Configuration SMTP</AlertTitle>
                 <AlertDescription>
-                    Les profils SMTP sont actuellement en lecture seule via l'API.
-                    Pour créer ou modifier un profil, veuillez utiliser l'interface GoPhish directement.
+                    Les profils SMTP sont actuellement en lecture seule via l&apos;API.
+                    Pour créer ou modifier un profil, veuillez utiliser l&apos;interface GoPhish directement.
                     Cette limitation sera levée dans une future mise à jour.
                 </AlertDescription>
             </Alert>
@@ -146,7 +146,7 @@ function SMTPList({
                         <Server className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                         <h3 className="text-lg font-semibold mb-2">Aucun profil SMTP</h3>
                         <p className="text-muted-foreground mb-4">
-                            Créez votre premier profil SMTP dans l'interface GoPhish
+                            Créez votre premier profil SMTP dans l&apos;interface GoPhish
                         </p>
                         <Button variant="outline" asChild>
                             <a
@@ -254,7 +254,7 @@ function SMTPEditor({
                 <CardHeader>
                     <CardTitle>Configuration du profil SMTP</CardTitle>
                     <CardDescription>
-                        Configurez votre serveur d'envoi d'emails
+                        Configurez votre serveur d&apos;envoi d&apos;emails
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -292,7 +292,7 @@ function SMTPEditor({
                         </div>
 
                         <div>
-                            <Label htmlFor="fromAddress">Adresse d'envoi *</Label>
+                            <Label htmlFor="fromAddress">Adresse d&apos;envoi *</Label>
                             <Input
                                 id="fromAddress"
                                 type="email"
@@ -304,7 +304,7 @@ function SMTPEditor({
                         </div>
 
                         <div>
-                            <Label htmlFor="interfaceType">Type d'interface</Label>
+                            <Label htmlFor="interfaceType">Type d&apos;interface</Label>
                             <Select
                                 value={profile.interfaceType || "SMTP"}
                                 onValueChange={(value) => handleFieldChange("interfaceType", value)}

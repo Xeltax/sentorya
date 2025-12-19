@@ -5,6 +5,7 @@ export type Campaign = {
     name : string,
     campaignId : string,
     organizationId : string,
+    organizationName?: string,
 
     goPhishCampaignId?: number;
     goPhishGroupId?: number;

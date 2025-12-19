@@ -326,23 +326,23 @@ export default function Page() {
 
                                         <CardContent>
                                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatus('all')}>
+                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatusAndCampain('all')}>
                                                     <div className="text-2xl font-bold">{campaign.results.length}</div>
                                                     <div className="text-sm text-gray-500">Emails Envoyés</div>
                                                 </div>
-                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatus('Email Opened')}>
+                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatusAndCampain('Email Opened')}>
                                                     <div className="text-2xl font-bold text-green-600">
                                                         {campaign.results.filter(r => ['Email Opened', 'Clicked', 'Submitted Data'].includes(r.status)).length}
                                                     </div>
                                                     <div className="text-sm text-gray-500">Ouverts</div>
                                                 </div>
-                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatus('Clicked')}>
+                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatusAndCampain('Clicked')}>
                                                     <div className="text-2xl font-bold text-orange-600">
                                                         {campaign.results.filter(r => ['Clicked', 'Submitted Data'].includes(r.status)).length}
                                                     </div>
                                                     <div className="text-sm text-gray-500">Cliqués</div>
                                                 </div>
-                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatus('Reported')}>
+                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatusAndCampain('Reported')}>
                                                     <div className="text-2xl font-bold text-blue-600">
                                                         {campaign.results.filter(r => r.reported).length}
                                                     </div>

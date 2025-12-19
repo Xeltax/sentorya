@@ -1,0 +1,126 @@
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: sentorya-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sentorya}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - sentorya-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-sentorya}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  # Backend Spring Boot
+  backend:
+    build:
+      context: ./back
+      dockerfile: ../back/Dockerfile
+    container_name: sentorya-backend
+    restart: always
+    environment:
+      # Database
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-sentorya}
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production-please}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-86400000}
+      
+      # CORS
+      APP_CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      
+      # GoPhish (serveur externe)
+      GOPHISH_APIURL: ${GOPHISH_URL:-http://192.168.10.101:9646}
+      GOPHISH_APIKEY: ${GOPHISH_API_KEY:-your-gophish-api-key}
+      GOPHISH_TIMEOUTMS: 30000
+      GOPHISH_RETRYATTEMPTS: 3
+      GOPHISH_RETRYDELAYMS: 1000
+      GOPHISH_VERIFYSSL: false
+      
+      # Spring profiles
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+    
+    # Permettre l'accès au réseau externe pour GoPhish
+    extra_hosts:
+      - "gophish:192.168.10.101"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sentorya-network
+    expose:
+      - "5000"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: ./front
+      dockerfile: ../front/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${BACKEND_URL:-http://localhost:5000}
+    container_name: sentorya-frontend
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: ${BACKEND_URL:-http://localhost:5000}
+    depends_on:
+      - backend
+    networks:
+      - sentorya-network
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: sentorya-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - sentorya-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  sentorya-network:
+    driver: bridge

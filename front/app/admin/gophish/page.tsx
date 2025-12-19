@@ -92,7 +92,7 @@ export default function GoPhishResourcesPage() {
                             </DialogTrigger>
                             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                                 <DialogHeader>
-                                    <DialogTitle>Créer un template d'email</DialogTitle>
+                                    <DialogTitle>Créer un template d&apos;email</DialogTitle>
                                 </DialogHeader>
                                 <TemplateForm
                                     onSubmit={async (data) => {
@@ -211,7 +211,7 @@ export default function GoPhishResourcesPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <p className="text-center text-muted-foreground">
-                                    Aucun profil SMTP configuré. Créez-en un dans l'interface GoPhish.
+                                    Aucun profil SMTP configuré. Créez-en un dans l&apos;interface GoPhish.
                                 </p>
                             </CardContent>
                         </Card>
@@ -302,7 +302,7 @@ function TemplateForm({ onSubmit }: { onSubmit: (data: any) => Promise<void> }) 
             </div>
 
             <div>
-                <Label htmlFor="subject">Sujet de l'email *</Label>
+                <Label htmlFor="subject">Sujet de l&apos;email *</Label>
                 <Input
                     id="subject"
                     value={formData.subject}
