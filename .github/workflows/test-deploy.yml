@@ -21,8 +21,13 @@ jobs:
 
       - name: 📤 Copy deployment files to server
         run: |
-          scp -i ~/.ssh/id_rsa -P ${{ secrets.SERVER_PORT }} docker-compose-prod.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/docker-compose.yml
-          scp -r -i ~/.ssh/id_rsa -P ${{ secrets.SERVER_PORT }} nginx ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no" \
+            docker-compose-prod.yml \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/docker-compose.yml
+          
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no" \
+            nginx/ \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/nginx/
 
       - name: 🚀 Test SSH commands
         run: |
