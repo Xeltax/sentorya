@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Docker Compose pour la PRODUCTION
 # Utilise les images depuis GitHub Container Registry
 

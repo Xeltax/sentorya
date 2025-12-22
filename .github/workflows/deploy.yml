@@ -170,7 +170,7 @@ jobs:
             fi
           
             # Vérifier Backend
-            if docker-compose exec -T backend curl -f http://localhost:5000/actuator/health > /dev/null 2>&1; then
+            if curl -f http://localhost/api/ > /dev/null 2>&1; then
               echo "✅ Backend: OK"
             else
               echo "❌ Backend: FAILED"
@@ -178,7 +178,7 @@ jobs:
             fi
           
             # Vérifier Frontend
-            if docker-compose exec -T frontend curl -f http://localhost:3000 > /dev/null 2>&1; then
+            if curl -f http://localhost/ > /dev/null 2>&1; then
               echo "✅ Frontend: OK"
             else
               echo "❌ Frontend: FAILED"
