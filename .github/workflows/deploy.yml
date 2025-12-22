@@ -57,7 +57,7 @@ jobs:
           docker build \
             -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-backend:${{ steps.meta.outputs.version }} \
             -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-backend:latest \
-            -f backend/Dockerfile \
+            -f back/Dockerfile \
             ./back
 
       # Build Frontend
@@ -66,7 +66,7 @@ jobs:
           docker build \
             -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:${{ steps.meta.outputs.version }} \
             -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:latest \
-            -f frontend/Dockerfile \
+            -f front/Dockerfile \
             ./front
 
       # Push Backend
