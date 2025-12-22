@@ -20,9 +20,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @ConfigurationProperties(prefix = "app")
 @Configuration
-data class CorsProperties(
-    val corsOrigin: String = ""
-)
+class CorsProperties {
+    var corsOrigin: String = ""
+}
 
 @Configuration
 @EnableWebSecurity

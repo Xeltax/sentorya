@@ -11,6 +11,7 @@ public class AppConfig {
     @Bean
     fun propertySourcesPlaceholderConfigurer(): PropertySourcesPlaceholderConfigurer {
         val configurer = PropertySourcesPlaceholderConfigurer()
+        configurer.setIgnoreResourceNotFound(true)
         configurer.setLocation(FileSystemResource(".env"))
         return configurer
     }

@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Installer les dépendances
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production
+RUN npm ci
 
 # Builder
 FROM node:current-alpine AS builder

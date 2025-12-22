@@ -1,3 +1,8 @@
+version: '3.8'
+
+# Docker Compose pour la PRODUCTION
+# Utilise les images depuis GitHub Container Registry
+
 services:
   # Base de données PostgreSQL
   postgres:
@@ -7,7 +12,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-sentorya}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
@@ -18,24 +23,20 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-      - "5432:5432"
 
-  # Backend Spring Boot
+  # Backend Spring Boot (image depuis GHCR)
   backend:
-    build:
-      context: ./back
-      dockerfile: ../back/Dockerfile
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/sentorya-backend:latest
     container_name: sentorya-backend
     restart: always
     environment:
       # Database
       DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-sentorya}
       DB_USERNAME: ${POSTGRES_USER:-postgres}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       
       # JWT
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production-please}
+      JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-86400000}
       
       # CORS
@@ -43,7 +44,7 @@ services:
       
       # GoPhish (serveur externe)
       GOPHISH_APIURL: ${GOPHISH_URL:-http://192.168.10.101:9646}
-      GOPHISH_APIKEY: ${GOPHISH_API_KEY:-your-gophish-api-key}
+      GOPHISH_APIKEY: ${GOPHISH_API_KEY}
       GOPHISH_TIMEOUTMS: 30000
       GOPHISH_RETRYATTEMPTS: 3
       GOPHISH_RETRYDELAYMS: 1000
@@ -52,9 +53,9 @@ services:
       # Spring profiles
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
     
-    # Permettre l'accès au réseau externe pour GoPhish
     extra_hosts:
       - "gophish:192.168.10.101"
+    
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,19 +70,16 @@ services:
       retries: 3
       start_period: 60s
 
-  # Frontend Next.js
+  # Frontend Next.js (image depuis GHCR)
   frontend:
-    build:
-      context: ./front
-      dockerfile: ../front/Dockerfile
-      args:
-        API_URL: http://backend:5000
-        NEXT_PUBLIC_API_URL: ${BACKEND_URL:-http://localhost/api}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/sentorya-frontend:latest
     container_name: sentorya-frontend
     restart: always
     environment:
+      # SSR (serveur Next.js → backend via réseau Docker)
       API_URL: http://backend:5000
-      NEXT_PUBLIC_API_URL: ${BACKEND_URL:-http://localhost/api}
+      # CSR (navigateur → backend via Nginx)
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api}
     depends_on:
       - backend
     networks:
@@ -105,7 +103,6 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./certbot/conf:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot:ro
     depends_on:
