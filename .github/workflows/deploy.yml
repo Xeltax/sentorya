@@ -8,6 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: ${{ github.repository_owner }}/sentorya
+  REPO_OWNER_LOWER: ${{ github.repository_owner }}
 
 jobs:
   # =====================================
@@ -34,6 +35,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 🔤 Convert repo owner to lowercase
+        id: lowercase
+        run: |
+          echo "owner=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: 🏷️ Extract metadata
         id: meta
         run: |
@@ -49,8 +55,8 @@ jobs:
       - name: 🏗️ Build Backend Image
         run: |
           docker build \
-            -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend:${{ steps.meta.outputs.version }} \
-            -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend:latest \
+            -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-backend:${{ steps.meta.outputs.version }} \
+            -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-backend:latest \
             -f backend/Dockerfile \
             ./back
 
@@ -58,22 +64,22 @@ jobs:
       - name: 🏗️ Build Frontend Image
         run: |
           docker build \
-            -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:${{ steps.meta.outputs.version }} \
-            -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:latest \
+            -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:${{ steps.meta.outputs.version }} \
+            -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:latest \
             -f frontend/Dockerfile \
             ./front
 
       # Push Backend
       - name: 📤 Push Backend Image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend:${{ steps.meta.outputs.version }}
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend:latest
+          docker push ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-backend:${{ steps.meta.outputs.version }}
+          docker push ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-backend:latest
 
       # Push Frontend
       - name: 📤 Push Frontend Image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:${{ steps.meta.outputs.version }}
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:latest
+          docker push ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:${{ steps.meta.outputs.version }}
+          docker push ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:latest
 
       - name: ✅ Build Summary
         run: |
@@ -82,8 +88,8 @@ jobs:
           echo "**Version:** \`${{ steps.meta.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Images:**" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔧 Backend: \`${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend:${{ steps.meta.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- 🎨 Frontend: \`${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:${{ steps.meta.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔧 Backend: \`${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-backend:${{ steps.meta.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 🎨 Frontend: \`${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:${{ steps.meta.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
 
   # =====================================
   # Job 2: Déployer sur le serveur
