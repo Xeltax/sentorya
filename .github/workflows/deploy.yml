@@ -112,16 +112,16 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
       - name: 📤 Copy deployment files to server
         run: |
-          scp -i ~/.ssh/id_rsa docker-compose.prod.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/docker-compose.yml
-          scp -r -i ~/.ssh/id_rsa nginx ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/
+          scp -i ~/.ssh/id_rsa -P ${{ secrets.SERVER_PORT }} docker-compose.prod.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/docker-compose.yml
+          scp -r -i ~/.ssh/id_rsa -P ${{ secrets.SERVER_PORT }} nginx ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/
 
       - name: 🚀 Deploy on server
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
             set -e
             cd ~/sentorya
           
@@ -149,7 +149,7 @@ jobs:
 
       - name: 🏥 Health Check
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
             cd ~/sentorya
           
             # Attendre que les services démarrent
@@ -202,7 +202,7 @@ jobs:
         if: failure()
         run: |
           echo "🔄 Rolling back to previous version..."
-          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
             cd ~/sentorya
             docker-compose down
             docker-compose up -d
