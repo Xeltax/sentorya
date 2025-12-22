@@ -163,22 +163,22 @@ jobs:
           
             # Vérifier Nginx
             if curl -f http://localhost/health > /dev/null 2>&1; then
-              echo "✅ Nginx: OK"
+              echo "✅ Nginx: OK !"
             else
               echo "❌ Nginx: FAILED"
               exit 1
             fi
           
             # Vérifier Backend
-            if curl -f http://localhost/api/ > /dev/null 2>&1; then
-              echo "✅ Backend: OK"
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost/api/ | grep -qE "^[23]"; then
+              echo "✅ Backend: OK (via Nginx)"
             else
               echo "❌ Backend: FAILED"
               exit 1
             fi
           
             # Vérifier Frontend
-            if curl -f http://localhost/ > /dev/null 2>&1; then
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost/ | grep -qE "^[23]"; then
               echo "✅ Frontend: OK"
             else
               echo "❌ Frontend: FAILED"
