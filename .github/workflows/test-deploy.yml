@@ -1,0 +1,36 @@
+name: 🧪 Test Deploy Only
+
+on:
+  workflow_dispatch:  # Lancement manuel uniquement
+
+jobs:
+  deploy:
+    name: 🚢 Test Deploy to Server
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout deployment files
+        uses: actions/checkout@v4
+
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 📤 Copy deployment files to server
+        run: |
+          scp -i ~/.ssh/id_rsa -P ${{ secrets.SERVER_PORT }} docker-compose.prod.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/docker-compose.yml
+          scp -r -i ~/.ssh/id_rsa -P ${{ secrets.SERVER_PORT }} nginx ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/sentorya/
+
+      - name: 🚀 Test SSH commands
+        run: |
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+            set -e
+            cd ~/sentorya
+            echo "✅ Connected to server!"
+            ls -la
+            docker --version
+            docker-compose --version
+          ENDSSH
