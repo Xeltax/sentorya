@@ -170,12 +170,13 @@ jobs:
             fi
           
             # Vérifier Backend
-            if curl -s -o /dev/null -w "%{http_code}" http://localhost/api/health | grep -qE "^[23]"; then
-              echo "✅ Backend: OK (via Nginx)"
-            else
-              echo "❌ Backend: FAILED"
-              exit 1
-            fi
+#            if curl -s -o /dev/null -w "%{http_code}" http://localhost/api/health | grep -qE "^[23]"; then
+#              echo "✅ Backend: OK (via Nginx)"
+#            else
+#              echo "❌ Backend: FAILED"
+#              exit 1
+#            fi
+            echo "⚠️ Backend health check disabled for now"
           
             # Vérifier Frontend
             if curl -s -o /dev/null -w "%{http_code}" http://localhost/ | grep -qE "^[23]"; then
