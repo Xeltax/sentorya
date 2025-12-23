@@ -42,6 +42,7 @@ class SecurityConfig(
                 auth
                     // Public endpoints
                     .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/health").permitAll()
                     .requestMatchers(HttpMethod.POST, "/user").permitAll()
                     .requestMatchers(HttpMethod.POST, "/campaign").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
