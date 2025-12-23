@@ -169,7 +169,7 @@ jobs:
               exit 1
             fi
           
-            # Vérifier Backend
+#            # Vérifier Backend
 #            if curl -s -o /dev/null -w "%{http_code}" http://localhost/api/health | grep -qE "^[23]"; then
 #              echo "✅ Backend: OK (via Nginx)"
 #            else
