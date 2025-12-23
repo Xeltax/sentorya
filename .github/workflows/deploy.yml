@@ -25,6 +25,56 @@ jobs:
       version: ${{ steps.meta.outputs.version }}
 
     steps:
+      - name: 📢 Discord - Démarrage du déploiement
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          COMMIT_MESSAGE=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          AUTHOR_AVATAR="https://github.com/${{ github.actor }}.png"
+          
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "embeds": [{
+              "title": "🚀 Déploiement en cours...",
+              "description": "Le pipeline CI/CD vient de démarrer",
+              "color": 3447003,
+              "fields": [
+                {
+                  "name": "📦 Repository",
+                  "value": "[${{ github.repository }}](https://github.com/${{ github.repository }})",
+                  "inline": true
+                },
+                {
+                  "name": "🌿 Branche",
+                  "value": "`${{ github.ref_name }}`",
+                  "inline": true
+                },
+                {
+                  "name": "👤 Auteur",
+                  "value": "[${{ github.actor }}](https://github.com/${{ github.actor }})",
+                  "inline": true
+                },
+                {
+                  "name": "💬 Commit",
+                  "value": "[`${{ github.sha }}`.substring(0,7)]('$COMMIT_URL')\n```'$COMMIT_MESSAGE'```",
+                  "inline": false
+                },
+                {
+                  "name": "🔗 Actions",
+                  "value": "[Voir le workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})",
+                  "inline": false
+                }
+              ],
+              "thumbnail": {
+                "url": "'$AUTHOR_AVATAR'"
+              },
+              "footer": {
+                "text": "Sentorya CI/CD",
+                "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+              },
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+            }]
+          }' $DISCORD_WEBHOOK
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
@@ -217,16 +267,122 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-and-push, deploy]
     if: always()
-    
-    steps:
-      - name: 📢 Notify Success
-        if: needs.deploy.result == 'success'
-        run: |
-          echo "✅ Deployment successful for version ${{ needs.build-and-push.outputs.version }}"
-          # Ici tu peux ajouter Discord, Slack, email, etc.
 
-      - name: 📢 Notify Failure
-        if: needs.deploy.result == 'failure'
+    steps:
+      - name: ✅ Discord - Déploiement réussi
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          echo "❌ Deployment failed for version ${{ needs.build-and-push.outputs.version }}"
-          # Ici tu peux ajouter Discord, Slack, email, etc.
+          COMMIT_MESSAGE=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          DURATION=$(($(date +%s) - ${{ github.event.repository.pushed_at }}))
+          
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "embeds": [{
+              "title": "✅ Déploiement réussi !",
+              "description": "L'\''application a été déployée avec succès en production",
+              "color": 5763719,
+              "fields": [
+                {
+                  "name": "📦 Repository",
+                  "value": "[${{ github.repository }}](https://github.com/${{ github.repository }})",
+                  "inline": true
+                },
+                {
+                  "name": "🌿 Branche",
+                  "value": "`${{ github.ref_name }}`",
+                  "inline": true
+                },
+                {
+                  "name": "👤 Déployé par",
+                  "value": "[${{ github.actor }}](https://github.com/${{ github.actor }})",
+                  "inline": true
+                },
+                {
+                  "name": "💬 Commit",
+                  "value": "[`${{ github.sha }}`.substring(0,7)]('$COMMIT_URL')\n```'$COMMIT_MESSAGE'```",
+                  "inline": false
+                },
+                {
+                  "name": "⏱️ Durée",
+                  "value": "~2-3 minutes",
+                  "inline": true
+                },
+                {
+                  "name": "🌐 Environnement",
+                  "value": "Production",
+                  "inline": true
+                },
+                {
+                  "name": "🔗 Liens",
+                  "value": "[Voir le workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) • [Voir le commit]('$COMMIT_URL')",
+                  "inline": false
+                }
+              ],
+              "thumbnail": {
+                "url": "https://cdn-icons-png.flaticon.com/512/190/190411.png"
+              },
+              "footer": {
+                "text": "Sentorya CI/CD • Déploiement réussi",
+                "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+              },
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+            }]
+          }' $DISCORD_WEBHOOK
+
+      - name: ❌ Discord - Déploiement échoué
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          COMMIT_MESSAGE=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "embeds": [{
+              "title": "❌ Échec du déploiement",
+              "description": "Le déploiement a rencontré une erreur",
+              "color": 15158332,
+              "fields": [
+                {
+                  "name": "📦 Repository",
+                  "value": "[${{ github.repository }}](https://github.com/${{ github.repository }})",
+                  "inline": true
+                },
+                {
+                  "name": "🌿 Branche",
+                  "value": "`${{ github.ref_name }}`",
+                  "inline": true
+                },
+                {
+                  "name": "👤 Auteur",
+                  "value": "[${{ github.actor }}](https://github.com/${{ github.actor }})",
+                  "inline": true
+                },
+                {
+                  "name": "💬 Commit",
+                  "value": "[`${{ github.sha }}`.substring(0,7)]('$COMMIT_URL')\n```'$COMMIT_MESSAGE'```",
+                  "inline": false
+                },
+                {
+                  "name": "🔍 Action requise",
+                  "value": "Vérifiez les logs du workflow pour identifier le problème",
+                  "inline": false
+                },
+                {
+                  "name": "🔗 Liens",
+                  "value": "[📋 Voir les logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) • [💬 Voir le commit]('$COMMIT_URL')",
+                  "inline": false
+                }
+              ],
+              "thumbnail": {
+                "url": "https://cdn-icons-png.flaticon.com/512/753/753345.png"
+              },
+              "footer": {
+                "text": "Sentorya CI/CD • Erreur détectée",
+                "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+              },
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+            }]
+          }' $DISCORD_WEBHOOK
