@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class TestController {
 
-    @GetMapping("/test")
+    @GetMapping("/health")
     fun testEndpoint(): ResponseEntity<String> {
         return ResponseEntity.ok("API Gateway is working!")
     }
