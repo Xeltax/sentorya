@@ -22,6 +22,8 @@ data class LoginRequest(
 
 data class LoginResponse(
     val user: UserResponse,
+    val hasOrganization : Boolean,
+    val organizationId : UUID?,
     val token: String
 )
 

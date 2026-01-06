@@ -5,6 +5,7 @@ import com.apigateway.service.CampaignService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
@@ -58,4 +59,12 @@ class CampaignController(
         val results = campaignService.getCampaignResults(id)
         return ResponseEntity.ok(results)
     }
+
+    @GetMapping("/organization/{organizationId}")
+    @PreAuthorize("hasRole('USER')")
+    fun getCampaignsByOrganizationId(@PathVariable organizationId: UUID): ResponseEntity<List<CampaignResponse>> {
+        val campaigns = campaignService.getCampaignsByOrganizationId(organizationId)
+        return ResponseEntity.ok(campaigns)
+    }
+
 }

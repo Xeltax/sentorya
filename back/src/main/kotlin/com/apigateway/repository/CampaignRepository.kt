@@ -15,4 +15,6 @@ interface CampaignRepository : JpaRepository<Campaign, String> {
     fun existsByCampaignId(campaignId: String): Boolean
 
     fun findByOrganizationId(organizationId: UUID): Optional<List<Campaign>>
+
+    fun countByOrganizationId(organizationId: UUID): Long
 }

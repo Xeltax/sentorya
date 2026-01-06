@@ -181,6 +181,16 @@ class CampaignService(
             logger.info { "Synchronisation des ${goPhishGroupIds.size} groupes GoPhish pour l'organisation $organizationId" }
         }
     }
+
+    fun countCampaignsByOrganizationId(organizationId: UUID): Long {
+        return campaignRepository.countByOrganizationId(organizationId)
+    }
+
+    fun getCampaignsByOrganizationId(organizationId: UUID): List<CampaignResponse> {
+        val campaigns = campaignRepository.findByOrganizationId(organizationId)
+            .orElseThrow { ResourceNotFoundException("No campaigns found for organization") }
+        return campaigns.map { it.toResponse() }
+    }
 }
 
 fun Campaign.toResponse() = CampaignResponse(

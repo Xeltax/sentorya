@@ -9,5 +9,7 @@ import java.util.UUID
 interface OrganizationMemberRepository : JpaRepository<OrganizationMember, String> {
     fun findByOrganizationIdAndUserId(organizationId: UUID, userId: UUID): OrganizationMember?
 
+    fun findByUserId(userId: UUID): List<OrganizationMember>
+
     fun findByOrganizationId(organizationId: UUID): List<OrganizationMember>
 }

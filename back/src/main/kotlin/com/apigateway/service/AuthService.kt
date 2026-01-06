@@ -3,6 +3,7 @@ package com.apigateway.service
 import com.apigateway.dto.LoginRequest
 import com.apigateway.dto.LoginResponse
 import com.apigateway.exception.UnauthorizedException
+import com.apigateway.repository.OrganizationMemberRepository
 import com.apigateway.repository.UserRepository
 import com.apigateway.security.JwtTokenProvider
 import mu.KotlinLogging
@@ -18,6 +19,7 @@ private val logger = KotlinLogging.logger {}
 @Transactional
 class AuthService(
     private val userRepository: UserRepository,
+    private val organizationMemberRepository: OrganizationMemberRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtTokenProvider: JwtTokenProvider
 ) {
@@ -36,6 +38,8 @@ class AuthService(
         user.lastLogin = LocalDateTime.now()
         userRepository.save(user)
 
+        val organizationMember = organizationMemberRepository.findByUserId(user.id!!)
+
         val token = jwtTokenProvider.generateToken(
             email = user.email,
             name = user.name,
@@ -48,6 +52,8 @@ class AuthService(
 
         return LoginResponse(
             user = user.toResponse(),
+            hasOrganization = organizationMember.isNotEmpty(),
+            organizationId = organizationMember.firstOrNull()?.organizationId,
             token = token
         )
     }

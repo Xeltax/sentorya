@@ -27,6 +27,9 @@ export default function Page() {
                 setCookie("JWT", token, {
                     maxAge: 60 * 60 * 24 * 7, // 7 days
                 })
+                if (response.data.hasOrganization) {
+                    localStorage.setItem("organizationId", response.data.organizationId);
+                }
                 if (response.data.user.role === "ADMIN") {
                     window.location.href = "/admin"; // Change this to your desired route
                 } else {

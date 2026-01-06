@@ -38,6 +38,9 @@ class JwtAuthenticationFilter(
                     authorities
                 )
 
+
+                logger.info("User authenticated: $userId with authorities: $authorities")
+
                 SecurityContextHolder.getContext().authentication = authentication
                 logger.debug { "Authenticated user: $email with role: $role" }
             }

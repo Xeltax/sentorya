@@ -210,4 +210,18 @@ class OrganizationController {
 
         return ResponseEntity.ok(usersList)
     }
+
+    @GetMapping("/campaigns/count")
+    fun getOrganizationsWithCampaignCounts(): ResponseEntity<List<Any>> {
+        val organizations = organizationRepository.findAll()
+        val responseList = organizations.map { organization ->
+            val campaignCount = campaignService.countCampaignsByOrganizationId(organization.id!!)
+            mapOf(
+                "organizationId" to organization.id,
+                "organizationName" to organization.name,
+                "campaignCount" to campaignCount
+            )
+        }
+        return ResponseEntity.ok(responseList)
+    }
 }

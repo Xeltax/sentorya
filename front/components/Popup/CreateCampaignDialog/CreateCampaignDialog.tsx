@@ -54,6 +54,7 @@ export default function CreateCampaignDialog({
             loadTemplates();
             loadPages();
             loadSMTPProfiles();
+            formData.createInGoPhish = true;
         }
     }, [isOpen]);
 
@@ -168,109 +169,101 @@ export default function CreateCampaignDialog({
                     {/* Configuration GoPhish */}
                     {formData.createInGoPhish && (
                         <Tabs defaultValue="required" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2">
-                                <TabsTrigger value="required">Requis</TabsTrigger>
-                                <TabsTrigger value="optional">Optionnel</TabsTrigger>
-                            </TabsList>
 
-                            <TabsContent value="required" className="space-y-4">
-                                <div>
-                                    <Label htmlFor="smtpProfileName">Profil SMTP *</Label>
-                                    <Select
-                                        value={formData.smtpProfileName}
-                                        onValueChange={(value) => handleChange("smtpProfileName", value)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Sélectionner un profil SMTP" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {smtpProfiles.length === 0 ? (
-                                                <SelectItem value="none" disabled>
-                                                    Aucun profil SMTP disponible
+                            <div>
+                                <Label htmlFor="smtpProfileName">Profil SMTP *</Label>
+                                <Select
+                                    value={formData.smtpProfileName}
+                                    onValueChange={(value) => handleChange("smtpProfileName", value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionner un profil SMTP" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {smtpProfiles.length === 0 ? (
+                                            <SelectItem value="none" disabled>
+                                                Aucun profil SMTP disponible
+                                            </SelectItem>
+                                        ) : (
+                                            smtpProfiles.map((smtp) => (
+                                                <SelectItem key={smtp.id} value={smtp.name}>
+                                                    {smtp.name}
                                                 </SelectItem>
-                                            ) : (
-                                                smtpProfiles.map((smtp) => (
-                                                    <SelectItem key={smtp.id} value={smtp.name}>
-                                                        {smtp.name}
-                                                    </SelectItem>
-                                                ))
-                                            )}
-                                        </SelectContent>
-                                    </Select>
-                                    {smtpProfiles.length === 0 && (
-                                        <p className="text-sm text-red-500 mt-1">
-                                            Veuillez créer un profil SMTP dans GoPhish
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <Label htmlFor="phishingUrl">URL de phishing *</Label>
-                                    <Input
-                                        id="phishingUrl"
-                                        type="url"
-                                        value={formData.phishingUrl}
-                                        onChange={(e) => handleChange("phishingUrl", e.target.value)}
-                                        placeholder="https://phishing.example.com"
-                                    />
-                                    <p className="text-sm text-muted-foreground mt-1">
-                                        URL où les cibles seront redirigées
+                                            ))
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                                {smtpProfiles.length === 0 && (
+                                    <p className="text-sm text-red-500 mt-1">
+                                        Veuillez créer un profil SMTP dans GoPhish
                                     </p>
-                                </div>
-                            </TabsContent>
+                                )}
+                            </div>
 
-                            <TabsContent value="optional" className="space-y-4">
-                                <div>
-                                    <Label htmlFor="templateName">Template d&apos;email</Label>
-                                    <Select
-                                        value={formData.templateName}
-                                        onValueChange={(value) => handleChange("templateName", value)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Template par défaut" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {templates.map((template) => (
-                                                <SelectItem key={template.id} value={template.name}>
-                                                    {template.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                            <div>
+                                <Label htmlFor="phishingUrl">URL de phishing *</Label>
+                                <Input
+                                    id="phishingUrl"
+                                    type="url"
+                                    value={formData.phishingUrl}
+                                    onChange={(e) => handleChange("phishingUrl", e.target.value)}
+                                    placeholder="https://phishing.example.com"
+                                />
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    URL où les cibles seront redirigées
+                                </p>
+                            </div>
 
-                                <div>
-                                    <Label htmlFor="pageName">Landing page</Label>
-                                    <Select
-                                        value={formData.pageName}
-                                        onValueChange={(value) => handleChange("pageName", value)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Page par défaut" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {pages.map((page) => (
-                                                <SelectItem key={page.id} value={page.name}>
-                                                    {page.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                            <div>
+                                <Label htmlFor="templateName">Template d&apos;email</Label>
+                                <Select
+                                    value={formData.templateName}
+                                    onValueChange={(value) => handleChange("templateName", value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Template par défaut" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {templates.map((template) => (
+                                            <SelectItem key={template.id} value={template.name}>
+                                                {template.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
-                                <div>
-                                    <Label htmlFor="launchDate">Date de lancement</Label>
-                                    <Input
-                                        id="launchDate"
-                                        type="datetime-local"
-                                        value={formData.launchDate}
-                                        onChange={(e) => handleChange("launchDate", e.target.value)}
-                                    />
-                                    <p className="text-sm text-muted-foreground mt-1">
-                                        Laisser vide pour un lancement immédiat
-                                    </p>
-                                </div>
-                            </TabsContent>
+                            <div>
+                                <Label htmlFor="pageName">Landing page</Label>
+                                <Select
+                                    value={formData.pageName}
+                                    onValueChange={(value) => handleChange("pageName", value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Page par défaut" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {pages.map((page) => (
+                                            <SelectItem key={page.id} value={page.name}>
+                                                {page.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div>
+                                <Label htmlFor="launchDate">Date de lancement</Label>
+                                <Input
+                                    id="launchDate"
+                                    type="datetime-local"
+                                    value={formData.launchDate}
+                                    onChange={(e) => handleChange("launchDate", e.target.value)}
+                                />
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Laisser vide pour un lancement immédiat
+                                </p>
+                            </div>
                         </Tabs>
                     )}
 

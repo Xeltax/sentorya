@@ -1,505 +1,481 @@
 "use client";
-import React, { useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Line, Area, AreaChart } from 'recharts';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { StatCard } from "@/components/Card/statCard/StatCard";
+import { CampaignCard } from "@/components/Card/campaingCard/CampaignCard";
 import {
     Mail,
-    Users,
-    AlertTriangle,
-    CheckCircle,
-    Clock,
-    TrendingUp,
-    Eye,
     MousePointer,
-    ChevronsUpDown
-} from 'lucide-react';
-import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
-import {boolean} from "zod";
-import {Button} from "@/components/ui/button";
+    AlertTriangle,
+    Download,
+    Filter,
+    FileDown,
+    Users, TrendingUp, TrendingDown
+} from "lucide-react";
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+    AreaChart,
+    Area
+} from "recharts";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { toast } from "sonner";
+import Client from "@/utils/client";
+import {ROUTES} from "@/utils/routes";
+import {useLocalStorage} from "@/hooks/useLocalStorage";
 
-const mockCampaigns = [
-    {
-        id: 1,
-        name: "Campagne Sécurité IT",
-        created_date: "2025-08-10T09:51:32.5700752Z",
-        launch_date: "2025-08-10T10:00:00Z",
-        status: "Completed",
-        results: [
-            { id: "6LuPBHE", status: "Clicked", email: "clement@test.com", first_name: "Clément", last_name: "Honoré", position: "IT Manager", send_date: "2025-08-10T10:00:00Z", reported: false },
-            { id: "7MvQCIF", status: "Submitted Data", email: "marie@test.com", first_name: "Marie", last_name: "Dubois", position: "HR Director", send_date: "2025-08-10T10:00:00Z", reported: true },
-            { id: "8NwRDJG", status: "Email Sent", email: "jean@test.com", first_name: "Jean", last_name: "Martin", position: "Developer", send_date: "2025-08-10T10:00:00Z", reported: false },
-            { id: "9OxSEKH", status: "Email Opened", email: "sophie@test.com", first_name: "Sophie", last_name: "Bernard", position: "Designer", send_date: "2025-08-10T10:00:00Z", reported: false },
-            { id: "0PyTFLI", status: "Clicked", email: "lucas@test.com", first_name: "Lucas", last_name: "Petit", position: "Sales", send_date: "2025-08-10T10:00:00Z", reported: false }
-        ],
-        template: { name: "Mise à jour sécuritaire urgente", subject: "Action requise: Mise à jour de sécurité" }
-    },
-    {
-        id: 2,
-        name: "Test Phishing RH",
-        created_date: "2025-08-12T14:30:00Z",
-        launch_date: "2025-08-12T15:00:00Z",
-        status: "In progress",
-        results: [
-            { id: "1QzUGMJ", status: "Email Sent", email: "paul@test.com", first_name: "Paul", last_name: "Moreau", position: "Manager", send_date: "2025-08-12T15:00:00Z", reported: false },
-            { id: "2RaVHNK", status: "Email Opened", email: "alice@test.com", first_name: "Alice", last_name: "Leroy", position: "Analyst", send_date: "2025-08-12T15:00:00Z", reported: false },
-            { id: "3SbWIOL", status: "Submitted Data", email: "thomas@test.com", first_name: "Thomas", last_name: "Roux", position: "Intern", send_date: "2025-08-12T15:00:00Z", reported: false },
-            { id: "4TcXJPM", status: "Clicked", email: "emma@test.com", first_name: "Emma", last_name: "Blanc", position: "Coordinator", send_date: "2025-08-12T15:00:00Z", reported: true }
-        ],
-        template: { name: "Formulaire RH", subject: "Mise à jour de vos informations personnelles" }
-    },
-    {
-        id: 3,
-        name: "Formation Sensibilisation",
-        created_date: "2025-08-14T08:00:00Z",
-        launch_date: "2025-08-14T09:00:00Z",
-        status: "Completed",
-        results: [
-            { id: "5UdYKQN", status: "Email Sent", email: "julie@test.com", first_name: "Julie", last_name: "Garcia", position: "Secretary", send_date: "2025-08-14T09:00:00Z", reported: false },
-            { id: "6VeZLRO", status: "Email Opened", email: "nicolas@test.com", first_name: "Nicolas", last_name: "Lopez", position: "Technician", send_date: "2025-08-14T09:00:00Z", reported: false },
-            { id: "7WfAMSP", status: "Reported", email: "camille@test.com", first_name: "Camille", last_name: "Girard", position: "Security Officer", send_date: "2025-08-14T09:00:00Z", reported: true }
-        ],
-        template: { name: "Test de sensibilisation", subject: "Lien de formation obligatoire" }
-    }
-];
+// Types
+interface CampaignStats {
+    opened: number;
+    clicked: number;
+    submitted: number;
+}
 
-export default function Page() {
-    // const [selectedCampaign, setSelectedCampaign] = useState(null);
-    const [isCollapseOpen, setCollapseOpen] = React.useState<boolean[]>([]);
+interface Campaign {
+    id: string;
+    name: string;
+    reference: string;
+    date: string;
+    stats: CampaignStats;
+    previousStats?: CampaignStats;
+    targets: Array<{
+        id: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        opened: boolean;
+        clicked: boolean;
+        submitted: boolean;
+        score: number;
+        department?: string;
+    }>;
+}
 
-    // Calcul des statistiques globales
-    const totalCampaigns = mockCampaigns.length;
-    const completedCampaigns = mockCampaigns.filter(c => c.status === 'Completed').length;
-    const inProgressCampaigns = mockCampaigns.filter(c => c.status === 'In progress').length;
+export default function UserDashboardPage() {
+    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+    const [filterDepartment, setFilterDepartment] = useState<string>("all");
+    const {getItem} = useLocalStorage();
+    const organizationId = getItem("organizationId") || "";
 
-    const allResults = mockCampaigns.flatMap(c => c.results);
-    const totalEmails = allResults.length;
-    const clickedEmails = allResults.filter(r => r.status === 'Clicked' || r.status === 'Submitted Data').length;
-    const reportedEmails = allResults.filter(r => r.reported).length;
-    const openedEmails = allResults.filter(r => ['Email Opened', 'Clicked', 'Submitted Data'].includes(r.status)).length;
-    const [filteredResult , setFilteredResult] = useState<any[]>([]);
+    console.log(organizationId);
 
-    // Données pour les graphiques
-    const statusDistribution = [
-        { name: 'Email Envoyé', value: allResults.filter(r => r.status === 'Email Sent').length, color: '#8884d8' },
-        { name: 'Email Ouvert', value: allResults.filter(r => r.status === 'Email Opened').length, color: '#82ca9d' },
-        { name: 'Lien Cliqué', value: allResults.filter(r => r.status === 'Clicked').length, color: '#ffc658' },
-        { name: 'Données Soumises', value: allResults.filter(r => r.status === 'Submitted Data').length, color: '#ff7c7c' },
-        { name: 'Signalé', value: allResults.filter(r => r.status === 'Reported').length, color: '#8dd1e1' },
-        { name: 'Erreur', value: allResults.filter(r => r.status === 'Error').length, color: '#d084d0' }
-    ].filter(item => item.value > 0);
+    useEffect(() => {
+        loadCampaigns();
+    }, []);
 
-    const campaignData = mockCampaigns.map(campaign => ({
-        name: campaign.name,
-        sent: campaign.results.length,
-        opened: campaign.results.filter(r => ['Email Opened', 'Clicked', 'Submitted Data'].includes(r.status)).length,
-        clicked: campaign.results.filter(r => ['Clicked', 'Submitted Data'].includes(r.status)).length,
-        reported: campaign.results.filter(r => r.reported).length
-    }));
-
-    const timelineData = mockCampaigns.map((campaign, index) => ({
-        date: new Date(campaign.launch_date).toLocaleDateString('fr-FR'),
-        campaigns: index + 1,
-        success_rate: Math.round((campaign.results.filter(r => r.reported).length / campaign.results.length) * 100)
-    }));
-
-    const getStatusColor = (status : string) => {
-        switch (status) {
-            case 'Completed': return 'bg-green-500';
-            case 'In progress': return 'bg-blue-500';
-            case 'Error': return 'bg-red-500';
-            default: return 'bg-gray-500';
+    const loadCampaigns = async () => {
+        try {
+            setLoading(true);
+            const response = await Client.get(ROUTES.BACK.CAMPAIGN.GET_BY_ORGANIZATION_ID(organizationId));
+            console.log(response)
+            setCampaigns(response.data);
+        } catch (error) {
+            console.error("Erreur chargement campagnes:", error);
+            toast.error("Impossible de charger les campagnes");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const getResultStatusColor = (status : string) => {
-        switch (status) {
-            case 'Email Sent': return 'secondary';
-            case 'Email Opened': return 'outline';
-            case 'Clicked': return 'destructive';
-            case 'Submitted Data': return 'destructive';
-            case 'Reported': return 'default';
-            case 'Error': return 'secondary';
-            default: return 'secondary';
-        }
+    // Calcul des stats globales
+    const globalStats = campaigns.reduce(
+        (acc, campaign) => {
+            const total = campaigns.length;
+            return {
+                opened: acc.opened + campaign.stats.opened / total,
+                clicked: acc.clicked + campaign.stats.clicked / total,
+                submitted: acc.submitted + campaign.stats.submitted / total,
+            };
+        },
+        { opened: 0, clicked: 0, submitted: 0 }
+    );
+
+    // Stats de la dernière campagne
+    const lastCampaign = campaigns[0];
+    const previousCampaign = campaigns[1];
+
+    // Données pour le graphique temporel
+    const timelineData = campaigns.map((campaign) => ({
+        date: new Date(campaign.date).toLocaleDateString("fr-FR", {
+            month: "short",
+            year: "numeric"
+        }),
+        opened: campaign.stats.opened,
+        clicked: campaign.stats.clicked,
+        submitted: campaign.stats.submitted,
+    })).reverse();
+
+    // Téléchargement PDF d'une campagne
+    const handleDownloadCampaign = async (campaignId: string) => {
+        toast.info("Génération du PDF en cours...");
+        // TODO: Implémenter la génération PDF
+        setTimeout(() => {
+            toast.success("PDF téléchargé !");
+        }, 1500);
     };
 
-    const filterUserByStatusAndCampain = (status: string) => {
-        let filtered: any[] = [];
-        mockCampaigns.forEach(campaign => {
-            const results = campaign.results.filter(r => {
-                if (status === 'all') return true;
-                if (status === 'Reported') return r.reported;
-                return r.status === status;
-            });
-            filtered = [...filtered, ...results];
-        });
-        setFilteredResult(filtered);
+    // Téléchargement multiple avec filtres
+    const handleBulkDownload = () => {
+        if (selectedCampaigns.length === 0) {
+            toast.error("Veuillez sélectionner au moins une campagne");
+            return;
+        }
+        toast.info(`Téléchargement de ${selectedCampaigns.length} campagne(s)...`);
+        // TODO: Implémenter le téléchargement groupé
+    };
+
+    // Filtrage par département
+    const departments = Array.from(
+        new Set(
+            campaigns.flatMap(c =>
+                c.targets.map(t => t.department).filter(Boolean)
+            )
+        )
+    );
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+        );
     }
 
     return (
-        <div className="p-6 space-y-6 min-h-screen w-full">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-bold text-white">Tableau de bord</h1>
-                    <p className="text-gray-100 mt-2">Suivi des campagnes de sensibilisation à la cybersécurité</p>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                    <Clock className="h-4 w-4" />
-                    <span>Dernière mise à jour: {new Date().toLocaleString('fr-FR')}</span>
-                </div>
+        <div className="container mx-auto py-6 space-y-6">
+            {/* Header */}
+            <div>
+                <h1 className="text-3xl font-bold">Mon Dashboard</h1>
+                <p className="text-muted-foreground mt-2">
+                    Suivi de vos campagnes de sensibilisation à la cybersécurité
+                </p>
             </div>
 
-            {/* Statistiques principales */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {campaigns.length === 0 ? (
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Campagnes Total</CardTitle>
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{totalCampaigns}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {completedCampaigns} terminées, {inProgressCampaigns} en cours
+                    <CardTitle className="text-center">
+                        <p className="text-muted-foreground">
+                            Aucune campagne disponible pour le moment. Veuillez patienter le temps de la mise en place de celles-ci.
                         </p>
-                    </CardContent>
+                    </CardTitle>
                 </Card>
+            ):
+                (
+                    <Tabs defaultValue="vue-generale" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="vue-generale">Vue Générale</TabsTrigger>
+                            <TabsTrigger value="campagnes">Mes Campagnes</TabsTrigger>
+                        </TabsList>
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Emails Envoyés</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{totalEmails}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {Math.round((openedEmails / totalEmails) * 100)}% d&apos;ouverture
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Taux de Clics</CardTitle>
-                        <MousePointer className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-orange-600">{Math.round((clickedEmails / totalEmails) * 100)}%</div>
-                        <p className="text-xs text-muted-foreground">
-                            {clickedEmails} sur {totalEmails} emails
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Signalements</CardTitle>
-                        <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-green-600">{Math.round((reportedEmails / totalEmails) * 100)}%</div>
-                        <p className="text-xs text-muted-foreground">
-                            {reportedEmails} emails signalés
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <Tabs defaultValue="overview" className="space-y-4">
-                <TabsList>
-                    <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
-                    <TabsTrigger value="campaigns">Campagnes</TabsTrigger>
-                    <TabsTrigger value="analytics">Analyses</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="overview" className="space-y-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Graphique en secteurs */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Distribution des Statuts</CardTitle>
-                                <CardDescription>Répartition des actions des utilisateurs</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <PieChart>
-                                        <Pie
-                                            data={statusDistribution}
-                                            cx="50%"
-                                            cy="50%"
-                                            labelLine={false}
-                                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                            outerRadius={80}
-                                            fill="#8884d8"
-                                            dataKey="value"
-                                        >
-                                            {statusDistribution.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} color={"black"} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip contentStyle={{background : "#18181B"}} labelStyle={{color : "white"}} itemStyle={{color : "white"}} />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
-
-                        {/* Graphique en barres */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Performance par Campagne</CardTitle>
-                                <CardDescription>Comparaison des taux d&apos;interaction</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart data={campaignData}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
-                                        <YAxis />
-                                        <Tooltip contentStyle={{background : "#18181B"}} />
-                                        <Legend />
-                                        <Bar dataKey="sent" fill="#8884d8" name="Envoyés" />
-                                        <Bar dataKey="opened" fill="#82ca9d" name="Ouverts" />
-                                        <Bar dataKey="clicked" fill="#ffc658" name="Cliqués" />
-                                        <Bar dataKey="reported" fill="#8dd1e1" name="Signalés" />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {/* Evolution temporelle */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Évolution dans le Temps</CardTitle>
-                            <CardDescription>Progression des campagnes et taux de réussite</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <AreaChart data={timelineData}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="date" />
-                                    <YAxis yAxisId="left" />
-                                    <YAxis yAxisId="right" orientation="right" />
-                                    <Tooltip contentStyle={{background : "#18181B"}} labelStyle={{color : "white"}} />
-                                    <Legend />
-                                    <Area yAxisId="left" type="monotone" dataKey="campaigns" stackId="1" stroke="#8884d8" fill="#8884d8" name="Campagnes" />
-                                    <Line yAxisId="right" type="monotone" dataKey="success_rate" stroke="#ff7300" name="Taux de Signalement (%)" />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                <TabsContent value="campaigns" className="space-y-4">
-                    <div className="grid gap-6">
-                        {mockCampaigns.map(campaign => (
-                            <Collapsible
-                                key={campaign.id}
-                                open={isCollapseOpen[campaign.id]}
-                            >
-                                <Card key={campaign.id}>
-                                    <CardHeader>
-                                        <div className="flex justify-between items-center">
-                                            <div>
-                                                <CardTitle>{campaign.name}</CardTitle>
-                                                <CardDescription>
-                                                    Template: {campaign.template.name} •
-                                                    Lancée le {new Date(campaign.launch_date).toLocaleDateString('fr-FR')}
-                                                </CardDescription>
-                                            </div>
-                                            <div className={"flex gap-2 align-items-center"}>
-                                                <Badge className={getStatusColor(campaign.status)}>
-                                                    {campaign.status}
-                                                </Badge>
-                                                <CollapsibleTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="size-8">
-                                                        <ChevronsUpDown />
-                                                        <span className="sr-only">Toggle</span>
-                                                    </Button>
-                                                </CollapsibleTrigger>
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                    <CollapsibleContent>
-
-                                        <CardContent>
-                                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatusAndCampain('all')}>
-                                                    <div className="text-2xl font-bold">{campaign.results.length}</div>
-                                                    <div className="text-sm text-gray-500">Emails Envoyés</div>
-                                                </div>
-                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatusAndCampain('Email Opened')}>
-                                                    <div className="text-2xl font-bold text-green-600">
-                                                        {campaign.results.filter(r => ['Email Opened', 'Clicked', 'Submitted Data'].includes(r.status)).length}
-                                                    </div>
-                                                    <div className="text-sm text-gray-500">Ouverts</div>
-                                                </div>
-                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatusAndCampain('Clicked')}>
-                                                    <div className="text-2xl font-bold text-orange-600">
-                                                        {campaign.results.filter(r => ['Clicked', 'Submitted Data'].includes(r.status)).length}
-                                                    </div>
-                                                    <div className="text-sm text-gray-500">Cliqués</div>
-                                                </div>
-                                                <div className="text-center cursor-pointer" onClick={() => filterUserByStatusAndCampain('Reported')}>
-                                                    <div className="text-2xl font-bold text-blue-600">
-                                                        {campaign.results.filter(r => r.reported).length}
-                                                    </div>
-                                                    <div className="text-sm text-gray-500">Signalés</div>
-                                                </div>
-                                            </div>
-
-                                            {/* Liste des résultats */}
-                                            <div className="space-y-2">
-                                                <h4 className="font-semibold">Détails des résultats:</h4>
-                                                <div className="grid gap-2">
-                                                    {filteredResult.map(result => (
-                                                        <div key={result.id} className="flex justify-between items-center p-2 bg-secondary rounded">
-                                                            <div>
-                                                                <span className="font-medium">{result.first_name} {result.last_name}</span>
-                                                                <span className="text-sm text-gray-500 ml-2">({result.position})</span>
-                                                                <span className="text-sm text-gray-500 ml-2">{result.email}</span>
-                                                            </div>
-                                                            <div className="flex items-center space-x-2">
-                                                                <Badge variant={getResultStatusColor(result.status)}>
-                                                                    {result.status}
-                                                                </Badge>
-                                                                {result.reported && (
-                                                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                    {campaign.results.length > 5 && (
-                                                        <div className="text-sm text-gray-500 text-center py-2">
-                                                            ... et {campaign.results.length - 5} autres résultats
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </CollapsibleContent>
-                                </Card>
-                            </Collapsible>
-                        ))}
-                    </div>
-                </TabsContent>
-
-                <TabsContent value="analytics" className="space-y-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Analyse de Risque</CardTitle>
-                                <CardDescription>Évaluation des vulnérabilités détectées</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    <Alert>
-                                        <AlertTriangle className="h-4 w-4" />
-                                        <AlertDescription>
-                                            <strong>Risque Élevé:</strong> {Math.round((clickedEmails / totalEmails) * 100)}% des utilisateurs ont cliqué sur les liens suspects
-                                        </AlertDescription>
-                                    </Alert>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="text-center p-4 bg-red-50 rounded-lg">
-                                            <div className="text-2xl font-bold text-red-600">{clickedEmails}</div>
-                                            <div className="text-sm text-red-800">Utilisateurs Vulnérables</div>
-                                        </div>
-                                        <div className="text-center p-4 bg-green-50 rounded-lg">
-                                            <div className="text-2xl font-bold text-green-600">{reportedEmails}</div>
-                                            <div className="text-sm text-green-800">Utilisateurs Vigilants</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Recommandations</CardTitle>
-                                <CardDescription>Actions suggérées pour améliorer la sécurité</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-3">
-                                    <div className="flex items-start space-x-3">
-                                        <TrendingUp className="h-5 w-5 text-blue-500 mt-0.5" />
-                                        <div>
-                                            <div className="font-medium">Formation Renforcée</div>
-                                            <div className="text-sm text-gray-600">Organiser des sessions pour les {clickedEmails} utilisateurs vulnérables</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start space-x-3">
-                                        <Eye className="h-5 w-5 text-green-500 mt-0.5" />
-                                        <div>
-                                            <div className="font-medium">Surveillance Continue</div>
-                                            <div className="text-sm text-gray-600">Programmer des campagnes mensuelles de sensibilisation</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start space-x-3">
-                                        <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5" />
-                                        <div>
-                                            <div className="font-medium">Politique de Sécurité</div>
-                                            <div className="text-sm text-gray-600">Réviser les procédures de signalement des emails suspects</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {/* Tableau de bord détaillé */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Analyse Détaillée par Département</CardTitle>
-                            <CardDescription>Performance par fonction dans l&apos;entreprise</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead>
-                                    <tr className="border-b">
-                                        <th className="text-left p-2">Poste</th>
-                                        <th className="text-left p-2">Emails Envoyés</th>
-                                        <th className="text-left p-2">Taux d&apos;Ouverture</th>
-                                        <th className="text-left p-2">Taux de Clic</th>
-                                        <th className="text-left p-2">Signalements</th>
-                                        <th className="text-left p-2">Risque</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {['IT Manager', 'HR Director', 'Developer', 'Designer', 'Sales', 'Manager', 'Analyst'].map(position => {
-                                        const positionResults = allResults.filter(r => r.position?.includes(position.split(' ')[0]));
-                                        const sent = positionResults.length;
-                                        const opened = positionResults.filter(r => ['Email Opened', 'Clicked', 'Submitted Data'].includes(r.status)).length;
-                                        const clicked = positionResults.filter(r => ['Clicked', 'Submitted Data'].includes(r.status)).length;
-                                        const reported = positionResults.filter(r => r.reported).length;
-
-                                        if (sent === 0) return null;
-
-                                        return (
-                                            <tr key={position} className="border-b">
-                                                <td className="p-2 font-medium">{position}</td>
-                                                <td className="p-2">{sent}</td>
-                                                <td className="p-2">{sent > 0 ? Math.round((opened / sent) * 100) : 0}%</td>
-                                                <td className="p-2">{sent > 0 ? Math.round((clicked / sent) * 100) : 0}%</td>
-                                                <td className="p-2">{sent > 0 ? Math.round((reported / sent) * 100) : 0}%</td>
-                                                <td className="p-2">
-                                                    <Badge variant={clicked > reported ? 'destructive' : 'default'}>
-                                                        {clicked > reported ? 'Élevé' : 'Modéré'}
-                                                    </Badge>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                    </tbody>
-                                </table>
+                        {/* Vue Générale */}
+                        <TabsContent value="vue-generale" className="space-y-6">
+                            {/* Stats comparatives */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <StatCard
+                                    title="Mails ouverts"
+                                    value={Math.round(lastCampaign?.stats.opened || 0)}
+                                    previousValue={previousCampaign?.stats.opened}
+                                    icon={<Mail className="h-4 w-4" />}
+                                />
+                                <StatCard
+                                    title="Liens cliqués"
+                                    value={Math.round(lastCampaign?.stats.clicked || 0)}
+                                    previousValue={previousCampaign?.stats.clicked}
+                                    icon={<MousePointer className="h-4 w-4" />}
+                                />
+                                <StatCard
+                                    title="Données envoyées"
+                                    value={Math.round(lastCampaign?.stats.submitted || 0)}
+                                    previousValue={previousCampaign?.stats.submitted}
+                                    icon={<AlertTriangle className="h-4 w-4" />}
+                                />
                             </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
+
+                            {/* Graphique global avec 3 blocs */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Vue d&apos;ensemble - Dernière campagne</CardTitle>
+                                    <CardDescription>
+                                        Comparaison des métriques avec la campagne précédente
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="grid grid-cols-3 gap-4 p-6">
+                                        {/* Mails ouverts */}
+                                        <div className="text-center">
+                                            <p className="text-sm text-muted-foreground mb-3">Mails ouverts</p>
+                                            <div
+                                                className={`rounded-lg p-8 ${
+                                                    (lastCampaign?.stats.opened || 0) > (previousCampaign?.stats.opened || 0)
+                                                        ? "bg-red-500"
+                                                        : "bg-green-500"
+                                                }`}
+                                            >
+                                                <div className="text-white">
+                                                    <div className="text-5xl font-bold mb-2">
+                                                        {lastCampaign?.stats.opened || 0}%
+                                                    </div>
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        {(lastCampaign?.stats.opened || 0) > (previousCampaign?.stats.opened || 0) ? (
+                                                            <span className="text-2xl"><TrendingUp className="h-12 w-12" /></span>
+                                                        ) : (
+                                                            <span className="text-2xl"><TrendingDown className="h-12 w-12" /></span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Liens cliqués */}
+                                        <div className="text-center">
+                                            <p className="text-sm text-muted-foreground mb-3">Liens cliqués</p>
+                                            <div
+                                                className={`rounded-lg p-8 ${
+                                                    (lastCampaign?.stats.clicked || 0) > (previousCampaign?.stats.clicked || 0)
+                                                        ? "bg-red-500"
+                                                        : "bg-green-500"
+                                                }`}
+                                            >
+                                                <div className="text-white">
+                                                    <div className="text-5xl font-bold mb-2">
+                                                        {lastCampaign?.stats.clicked || 0}%
+                                                    </div>
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        {(lastCampaign?.stats.clicked || 0) > (previousCampaign?.stats.clicked || 0) ? (
+                                                            <span className="text-2xl"><TrendingUp className="h-12 w-12" /></span>
+                                                        ) : (
+                                                            <span className="text-2xl"><TrendingDown className="h-12 w-12" /></span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Données envoyées */}
+                                        <div className="text-center">
+                                            <p className="text-sm text-muted-foreground mb-3">Données envoyées</p>
+                                            <div
+                                                className={`rounded-lg p-8 ${
+                                                    (lastCampaign?.stats.submitted || 0) > (previousCampaign?.stats.submitted || 0)
+                                                        ? "bg-red-500"
+                                                        : "bg-green-500"
+                                                }`}
+                                            >
+                                                <div className="text-white">
+                                                    <div className="text-5xl font-bold mb-2">
+                                                        {lastCampaign?.stats.submitted || 0}%
+                                                    </div>
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        {(lastCampaign?.stats.submitted || 0) > (previousCampaign?.stats.submitted || 0) ? (
+                                                            <span className="text-2xl"><TrendingUp className="h-12 w-12" /></span>
+                                                        ) : (
+                                                            <span className="text-2xl"><TrendingDown className="h-12 w-12" /></span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Graphique d'évolution temporelle */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Évolution dans le temps</CardTitle>
+                                    <CardDescription>
+                                        Suivi des métriques sur l&apos;ensemble des campagnes
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <ResponsiveContainer width="100%" height={400}>
+                                        <AreaChart data={timelineData}>
+                                            <defs>
+                                                <linearGradient id="colorOpened" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                                                </linearGradient>
+                                                <linearGradient id="colorClicked" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8}/>
+                                                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                                                </linearGradient>
+                                                <linearGradient id="colorSubmitted" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
+                                                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="date" />
+                                            <YAxis />
+                                            <Tooltip contentStyle={{background : "#18181B"}} />
+                                            <Legend />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="opened"
+                                                stroke="#10b981"
+                                                fillOpacity={1}
+                                                fill="url(#colorOpened)"
+                                                name="Mails ouverts"
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="clicked"
+                                                stroke="#f59e0b"
+                                                fillOpacity={1}
+                                                fill="url(#colorClicked)"
+                                                name="Liens cliqués"
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="submitted"
+                                                stroke="#ef4444"
+                                                fillOpacity={1}
+                                                fill="url(#colorSubmitted)"
+                                                name="Données envoyées"
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </CardContent>
+                            </Card>
+
+                            {/* Filtrage par département */}
+                            {departments.length > 0 && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Analyse par département</CardTitle>
+                                        <CardDescription>
+                                            Suivez les performances de chaque équipe
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <Users className="h-5 w-5 text-muted-foreground" />
+                                            <Select value={filterDepartment} onValueChange={setFilterDepartment}>
+                                                <SelectTrigger className="w-[200px]">
+                                                    <SelectValue placeholder="Tous les départements" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">Tous les départements</SelectItem>
+                                                    {departments.map((dept) => (
+                                                        <SelectItem key={dept} value={dept || ""}>
+                                                            {dept}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <p className="text-sm text-muted-foreground">
+                                            Sélectionnez un département pour voir les statistiques détaillées
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </TabsContent>
+
+                        {/* Liste des Campagnes */}
+                        <TabsContent value="campagnes" className="space-y-6">
+                            {/* Actions groupées */}
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <CardTitle>Mes Campagnes</CardTitle>
+                                            <CardDescription>
+                                                Visualisez et téléchargez vos rapports de campagnes
+                                            </CardDescription>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button variant="outline">
+                                                        <Filter className="mr-2 h-4 w-4" />
+                                                        Filtres
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-80">
+                                                    <div className="space-y-4">
+                                                        <h4 className="font-medium">Sélectionner les campagnes</h4>
+                                                        {campaigns.map((campaign) => (
+                                                            <div key={campaign.id} className="flex items-center space-x-2">
+                                                                <Checkbox
+                                                                    id={campaign.id}
+                                                                    checked={selectedCampaigns.includes(campaign.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        if (checked) {
+                                                                            setSelectedCampaigns([...selectedCampaigns, campaign.id]);
+                                                                        } else {
+                                                                            setSelectedCampaigns(
+                                                                                selectedCampaigns.filter((id) => id !== campaign.id)
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <Label htmlFor={campaign.id} className="text-sm">
+                                                                    {campaign.name}
+                                                                </Label>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </PopoverContent>
+                                            </Popover>
+                                            <Button onClick={handleBulkDownload}>
+                                                <FileDown className="mr-2 h-4 w-4" />
+                                                Télécharger ({selectedCampaigns.length})
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                            </Card>
+
+                            {/* Liste des campagnes */}
+                            <div className="space-y-4">
+                                {campaigns.map((campaign) => (
+                                    <CampaignCard
+                                        key={campaign.id}
+                                        campaign={campaign}
+                                        onDownload={handleDownloadCampaign}
+                                    />
+                                ))}
+                            </div>
+
+                            {campaigns.length === 0 && (
+                                <Card>
+                                    <CardContent className="pt-6 text-center">
+                                        <p className="text-muted-foreground">
+                                            Aucune campagne disponible pour le moment
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </TabsContent>
+                    </Tabs>
+                )
+            }
         </div>
-    )
+    );
 }
