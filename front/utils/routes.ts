@@ -17,6 +17,7 @@ export const ROUTES = {
             GET_BY_ID : (id: string) => `/campaign/${id}`,
             GET_RESULTS : (id: string) => `/campaign/${id}/results`,
             GET_BY_ORGANIZATION_ID : (organizationId: string) => `/campaign/organization/${organizationId}`,
+            RESULT_BY_ORGANIZATION_ID : (organizationId: string) => `/campaign/organization/${organizationId}/summary`,
         },
         GOPHISH : {
             TEMPLATES : "/gophish/templates",

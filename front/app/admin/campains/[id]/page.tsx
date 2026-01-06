@@ -173,12 +173,12 @@ export default function CampaignResultsPage() {
                                 <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold text-red-600">{stats.submittedData}</div>
+                                <div className="text-2xl font-bold text-red-600">{stats.submitted_data}</div>
                                 <p className="text-xs text-muted-foreground">
-                                    {stats.sent > 0 ? Math.round((stats.submittedData / stats.sent) * 100) : 0}% ont soumis
+                                    {stats.sent > 0 ? Math.round((stats.submitted_data / stats.sent) * 100) : 0}% ont soumis
                                 </p>
                                 <Progress
-                                    value={(stats.submittedData / stats.sent) * 100}
+                                    value={(stats.submitted_data / stats.sent) * 100}
                                     className="mt-2"
                                 />
                             </CardContent>
@@ -254,15 +254,15 @@ export default function CampaignResultsPage() {
                                     <div className="flex justify-between mb-2">
                                         <span className="font-medium">Taux de vulnérabilité</span>
                                         <span className="font-bold text-orange-600">
-                                            {stats.sent > 0 ? Math.round(((stats.clicked + stats.submittedData) / stats.sent) * 100) : 0}%
+                                            {stats.sent > 0 ? Math.round(((stats.clicked + stats.submitted_data) / stats.sent) * 100) : 0}%
                                         </span>
                                     </div>
                                     <Progress
-                                        value={((stats.clicked + stats.submittedData) / stats.sent) * 100}
+                                        value={((stats.clicked + stats.submitted_data) / stats.sent) * 100}
                                         className="h-2"
                                     />
                                     <p className="text-sm text-muted-foreground mt-2">
-                                        {stats.clicked + stats.submittedData} utilisateurs ont interagi avec le phishing
+                                        {stats.clicked + stats.submitted_data} utilisateurs ont interagi avec le phishing
                                     </p>
                                 </div>
 

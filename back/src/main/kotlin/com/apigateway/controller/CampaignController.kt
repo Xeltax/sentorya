@@ -1,6 +1,7 @@
 package com.apigateway.controller
 
 import com.apigateway.dto.*
+import com.apigateway.gophish.dto.GoPhishCampaignSummary
 import com.apigateway.service.CampaignService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -67,4 +68,10 @@ class CampaignController(
         return ResponseEntity.ok(campaigns)
     }
 
+    @GetMapping("/organization/{organizationId}/summary")
+    @PreAuthorize("hasRole('USER')")
+    fun getCampaignSummaryByOrganizationId(@PathVariable organizationId: UUID): ResponseEntity<List<GoPhishCampaignSummary>> {
+        val summaries = campaignService.getCampaignsResultsByOrganizationId(organizationId)
+        return ResponseEntity.ok(summaries)
+    }
 }

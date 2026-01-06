@@ -5,6 +5,7 @@ import com.apigateway.entity.Campaign
 import com.apigateway.exception.BadRequestException
 import com.apigateway.exception.ConflictException
 import com.apigateway.exception.ResourceNotFoundException
+import com.apigateway.gophish.dto.GoPhishCampaignSummary
 import com.apigateway.gophish.exception.GoPhishException
 import com.apigateway.gophish.service.GoPhishService
 import com.apigateway.repository.CampaignRepository
@@ -163,6 +164,19 @@ class CampaignService(
         }
 
         return goPhishService.getCampaignSummary(campaign.goPhishCampaignId!!)
+    }
+
+    @Transactional(readOnly = true)
+    fun getCampaignsResultsByOrganizationId(organizationId: UUID): List<GoPhishCampaignSummary> {
+        val campaigns = campaignRepository.findByOrganizationId(organizationId)
+            .orElseThrow { ResourceNotFoundException("No campaigns found for organization") }
+
+        return campaigns.mapNotNull { campaign ->
+            campaign.goPhishCampaignId?.let { goPhishId ->
+                println("Fetching summary for GoPhish Campaign ID: $goPhishId")
+                goPhishService.getCampaignSummary(goPhishId)
+            }
+        }
     }
 
     /**

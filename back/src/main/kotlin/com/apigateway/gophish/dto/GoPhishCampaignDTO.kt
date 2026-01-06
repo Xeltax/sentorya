@@ -46,7 +46,7 @@ data class GoPhishCampaign(
     val url: String,
 
     @JsonProperty("groups")
-    val groups: List<GoPhishCampaignGroup>
+    val groups: List<GoPhishCampaignGroup> = emptyList()
 )
 
 /**

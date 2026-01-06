@@ -86,7 +86,6 @@ class OrganizationController {
             role = OrganizationRole.OWNER
         )
 
-
         organizationMemberRepository.save(ownerAsMember)
         val goPhishGroup = goPhishService.createOrGetGroupFromOrganization(newOrganization.id!!, newOrganization.name)
         println("Created GoPhish group with ID: ${goPhishGroup} for organization ID: ${newOrganization.id}")

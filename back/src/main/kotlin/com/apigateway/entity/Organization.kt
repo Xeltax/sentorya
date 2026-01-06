@@ -15,7 +15,6 @@ import java.util.UUID
 @Table(name = "organizations")
 data class Organizations (
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID? = null,
 
     @Column(unique = true, nullable = false)

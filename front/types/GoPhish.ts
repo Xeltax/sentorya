@@ -47,7 +47,7 @@ export interface GoPhishCampaignStats {
     sent: number;
     opened: number;
     clicked: number;
-    submittedData: number;
+    submitted_data: number;
     emailReported: number;
     error: number;
 }
@@ -69,9 +69,9 @@ export interface GoPhishResult {
 export interface GoPhishCampaignSummary {
     id: number;
     name: string;
-    createdDate: string;
-    launchDate: string;
-    completedDate?: string;
+    created_date: string;
+    launch_date: string;
+    completed_date?: string;
     status: string;
     stats: GoPhishCampaignStats;
 }
