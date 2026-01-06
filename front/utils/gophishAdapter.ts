@@ -66,8 +66,8 @@ export function transformGoPhishResult(result: GoPhishResult): DashboardTarget {
 
     const target: DashboardTarget = {
         id: result.id,
-        firstName: result.firstName || "",
-        lastName: result.lastName || "",
+        firstName: result.firstName || result.first_name || "",
+        lastName: result.lastName || result.last_name || "",
         email: result.email,
         opened: actions.opened,
         clicked: actions.clicked,
