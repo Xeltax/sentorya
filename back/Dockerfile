@@ -11,7 +11,9 @@ COPY gradle.properties .
 COPY build.gradle.kts .
 
 # Télécharger les dépendances
-RUN gradle dependencies --no-daemon
+RUN for i in 1 2 3 4 5; do \
+    gradle dependencies --no-daemon && break || sleep 10; \
+    done
 
 # Copier le code source
 COPY src src

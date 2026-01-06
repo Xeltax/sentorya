@@ -17,6 +17,10 @@ java {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
+    // Ajouter des mirrors de secours
+    maven { url = uri("https://maven.aliyun.com/repository/public") }
+    maven { url = uri("https://jcenter.bintray.com") }
 }
 
 dependencies {
