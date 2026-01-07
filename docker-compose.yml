@@ -76,13 +76,13 @@ services:
       dockerfile: ../front/Dockerfile
       args:
         API_URL: http://backend:5000
-        NEXT_PUBLIC_API_URL: ${BACKEND_URL:-http://localhost/api}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api}
         NEXT_PUBLIC_USE_MOCK: true
     container_name: sentorya-frontend
     restart: always
     environment:
       API_URL: http://backend:5000
-      NEXT_PUBLIC_API_URL: ${BACKEND_URL:-http://localhost/api}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api}
       NEXT_PUBLIC_USE_MOCK: true
     depends_on:
       - backend

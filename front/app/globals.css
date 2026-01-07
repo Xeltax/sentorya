@@ -238,11 +238,21 @@
     }
 }
 
+@keyframes spin-reverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
 /* Crée la classe utilitaire */
 @layer utilities {
     .animate-hammer {
         animation: hammer 0.8s ease-in-out infinite;
         transform-origin: bottom left;
+    }
+
+    .animate-spin-reverse > path {
+        transform-origin: center;
+        animation: spin-reverse 1s linear infinite;
     }
 }
 

@@ -169,7 +169,7 @@ export default function UserDashboardPage() {
             <div className="container mx-auto my-auto py-6 text-center">
                 <div className={"relative"}>
                     <Hammer className="mx-auto mb-4 h-24 w-24 text-muted-foreground animate-hammer" />
-                    <Settings className={"absolute bottom-0 right-8 h-8 w-full pl-170 text-muted-foreground"} />
+                    <Settings className={"absolute bottom-0 right-8 h-8 w-full pl-44 text-muted-foreground animate-spin-reverse"} />
                 </div>
                 <p className="text-muted-foreground">
                     Votre compte est encore en cours de configuration. Veuillez patientez pendant que nous préparons votre espace de travail.
