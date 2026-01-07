@@ -11,7 +11,7 @@ import {
     MousePointer,
     AlertTriangle,
     Filter,
-    FileDown, TrendingUp, TrendingDown
+    FileDown, TrendingUp, TrendingDown, Settings, Hammer
 } from "lucide-react";
 import {
     AreaChart,
@@ -54,6 +54,7 @@ export default function UserDashboardPage() {
     const [loading, setLoading] = useState(true);
     const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
     const [organizationId, setOrganizationId] = useState<string>("");
+    const [hasOrganization, setHasOrganization] = useState<boolean>(true);
     const {getItem} = useLocalStorage()
 
     useEffect(() => {
@@ -61,9 +62,10 @@ export default function UserDashboardPage() {
         const orgId = getItem("organizationId");
         if (orgId) {
             setOrganizationId(orgId);
+            setHasOrganization(true);
         } else {
-            console.error("organizationId non trouvé dans le LocalStorage");
-            toast.error("Impossible de récupérer l'organisation");
+            setHasOrganization(false);
+            setLoading(false);
         }
     }, [getItem]);
 
@@ -156,8 +158,22 @@ export default function UserDashboardPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen">
+            <div className="flex mx-auto items-center justify-center h-screen">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
+    if (!hasOrganization) {
+        return (
+            <div className="container mx-auto my-auto py-6 text-center">
+                <div className={"relative"}>
+                    <Hammer className="mx-auto mb-4 h-24 w-24 text-muted-foreground animate-hammer" />
+                    <Settings className={"absolute bottom-0 right-8 h-8 w-full pl-170 text-muted-foreground"} />
+                </div>
+                <p className="text-muted-foreground">
+                    Votre compte est encore en cours de configuration. Veuillez patientez pendant que nous préparons votre espace de travail.
+                </p>
             </div>
         );
     }
@@ -217,7 +233,7 @@ export default function UserDashboardPage() {
                                 <div className="grid grid-cols-3 gap-4 p-6">
                                     {/* Mails ouverts */}
                                     <div className="text-center">
-                                        <p className="text-sm text-muted-foreground mb-3">Mails ouverts</p>
+                                        <p className="text-m text-muted-foreground mb-3">Mails ouverts</p>
                                         <div
                                             className={`rounded-lg p-8 ${
                                                 lastCampaign.stats.opened > previousCampaign.stats.opened
@@ -242,7 +258,7 @@ export default function UserDashboardPage() {
 
                                     {/* Liens cliqués */}
                                     <div className="text-center">
-                                        <p className="text-sm text-muted-foreground mb-3">Liens cliqués</p>
+                                        <p className="text-m text-muted-foreground mb-3">Liens cliqués</p>
                                         <div
                                             className={`rounded-lg p-8 ${
                                                 lastCampaign.stats.clicked > previousCampaign.stats.clicked
@@ -267,7 +283,7 @@ export default function UserDashboardPage() {
 
                                     {/* Données envoyées */}
                                     <div className="text-center">
-                                        <p className="text-sm text-muted-foreground mb-3">Données envoyées</p>
+                                        <p className="text-m text-muted-foreground mb-3">Données envoyées</p>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <div

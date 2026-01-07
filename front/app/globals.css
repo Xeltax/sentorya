@@ -226,6 +226,26 @@
   }
 }
 
+@keyframes hammer {
+    0% {
+        transform: rotate(-45deg);
+    }
+    40% {
+        transform: rotate(15deg);
+    }
+    100% {
+        transform: rotate(-45deg);
+    }
+}
+
+/* Crée la classe utilitaire */
+@layer utilities {
+    .animate-hammer {
+        animation: hammer 0.8s ease-in-out infinite;
+        transform-origin: bottom left;
+    }
+}
+
 li {
   @apply list-none;
 }

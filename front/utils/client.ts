@@ -16,6 +16,16 @@ Client.interceptors.request.use(
     (config) => {
         const cookie = getCookie("JWT");
 
+        const logPrefix = isServer ? '[SERVER-REQ]' : '[CLIENT-REQ]';
+        console.log(logPrefix, {
+            method: config.method?.toUpperCase(),
+            url: config.url,
+            baseURL: config.baseURL,
+            fullURL: `${config.baseURL}${config.url}`,
+            hasAuth: !!cookie,
+            timestamp: new Date().toISOString()
+        });
+
         if (typeof cookie === "string") {
             config.headers['Authorization'] = `Bearer ${cookie}`
         }

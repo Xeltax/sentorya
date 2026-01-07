@@ -3,6 +3,9 @@ package com.apigateway.controller
 import com.apigateway.dto.CreateUserRequest
 import com.apigateway.dto.UpdateUserRequest
 import com.apigateway.dto.UserResponse
+import com.apigateway.entity.Organizations
+import com.apigateway.repository.OrganizationMemberRepository
+import com.apigateway.repository.OrganizationRepository
 import com.apigateway.service.UserService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -13,7 +16,9 @@ import java.util.UUID
 @RestController
 @RequestMapping("/user")
 class UserController(
-    private val userService: UserService
+    private val userService: UserService,
+    private val organizationRepository: OrganizationRepository,
+    private val organizationMemberRepository: OrganizationMemberRepository
 ) {
 
     @PostMapping
@@ -29,7 +34,7 @@ class UserController(
     }
 
     @GetMapping("/{id}")
-    fun getUserById(@PathVariable id: String): ResponseEntity<UserResponse> {
+    fun getUserById(@PathVariable id: UUID): ResponseEntity<UserResponse> {
         val user = userService.getById(id)
         return ResponseEntity.ok(user)
     }
@@ -41,7 +46,7 @@ class UserController(
     }
 
     @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: String): ResponseEntity<Unit> {
+    fun deleteUser(@PathVariable id: UUID): ResponseEntity<Unit> {
         userService.deleteUser(id)
         return ResponseEntity.noContent().build()
     }
@@ -50,5 +55,20 @@ class UserController(
     fun resetPassword(@PathVariable id: UUID): ResponseEntity<String> {
         val newPassword = userService.resetPassword(id)
         return ResponseEntity.ok(newPassword)
+    }
+
+    @GetMapping("/{userId}/organizations")
+    fun getUserOrganization(@PathVariable userId: UUID): ResponseEntity<Any> {
+        val members = organizationMemberRepository.findByUserId(userId)
+        members.forEach { member ->
+            val organization = organizationRepository.findById(member.organizationId).orElse(null)
+            if (organization != null) {
+                val response = listOf(
+                    organization
+                )
+                return ResponseEntity.ok(response)
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Organization not found for user")
     }
 }

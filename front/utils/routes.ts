@@ -3,6 +3,8 @@ export const ROUTES = {
         USER : {
             CRUD : "/user",
             RESET_PASSWORD : "/user/reset-password",
+            GET_BY_ID : (id: string) => `/user/${id}`,
+            ORGANIZATIONS : (userId: string) => `/user/${userId}/organizations`,
         },
         ORGANIZATION : {
             CRUD : "/organizations",

@@ -40,7 +40,7 @@ class UserService(
     }
 
     @Transactional(readOnly = true)
-    fun getById(id: String): UserResponse {
+    fun getById(id: UUID): UserResponse {
         val user = userRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("User not found") }
         return user.toResponse()
@@ -82,11 +82,11 @@ class UserService(
         return password
     }
 
-    fun deleteUser(id: String) {
-        if (!userRepository.existsById(id)) {
+    fun deleteUser(id: UUID) {
+        if (!userRepository.existsById(id.toString())) {
             throw ResourceNotFoundException("User not found")
         }
-        userRepository.deleteById(id)
+        userRepository.deleteById(id.toString())
         logger.info { "User deleted: $id" }
     }
 

@@ -57,6 +57,8 @@ export interface GoPhishResult {
     email: string;
     firstName: string;
     lastName: string;
+    first_name : string;
+    last_name : string
     position: string;
     status: string;
     ip: string;

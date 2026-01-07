@@ -1,6 +1,7 @@
 package com.apigateway.controller
 
 import com.apigateway.dto.EditOrganizationDTO
+import com.apigateway.dto.OrganizationMemberDto
 import com.apigateway.dto.OrganizationsWithMembersResponse
 import com.apigateway.dto.addMemberDTO
 import com.apigateway.entity.OrganizationRole
@@ -199,12 +200,19 @@ class OrganizationController {
     @GetMapping("{organizationId}/members")
     fun getOrganizationMembers(
         @PathVariable organizationId: UUID
-    ): ResponseEntity<List<User>> {
+    ): ResponseEntity<List<OrganizationMemberDto>> {
         val members = organizationMemberRepository.findByOrganizationId(organizationId)
-        val usersList = mutableListOf<User>()
+        val usersList = mutableListOf<OrganizationMemberDto>()
         members.forEach { member ->
-            val user: User = userRepository.findById(member.userId).orElseThrow { Exception("User not found") }
-            usersList.add(user)
+            val user = userRepository.findById(member.userId).orElseThrow { Exception("User not found") }
+            val dto = OrganizationMemberDto(
+                id = user.id!!,
+                name = user.name,
+                email = user.email,
+                phoneNumber = user.phoneNumber,
+                role = member.role
+            )
+            usersList.add(dto)
         }
 
         return ResponseEntity.ok(usersList)
