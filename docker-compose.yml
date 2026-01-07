@@ -77,13 +77,13 @@ services:
       args:
         API_URL: http://backend:5000
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api}
-        NEXT_PUBLIC_USE_MOCK: true
+        NEXT_PUBLIC_USE_MOCK: ${NEXT_PUBLIC_USE_MOCK:-false}
     container_name: sentorya-frontend
     restart: always
     environment:
       API_URL: http://backend:5000
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api}
-      NEXT_PUBLIC_USE_MOCK: true
+      NEXT_PUBLIC_USE_MOCK: ${NEXT_PUBLIC_USE_MOCK:-false}
     depends_on:
       - backend
     networks:

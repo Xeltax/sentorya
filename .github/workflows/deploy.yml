@@ -114,8 +114,10 @@ jobs:
       - name: 🏗️ Build Frontend Image
         run: |
           docker build \
-            -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:${{ steps.meta.outputs.version }} \
-            -t ${{ env.REGISTRY }}/${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:latest \
+            --build-arg NEXT_PUBLIC_API_URL=https://sentorya.fr/api \
+            --build-arg NEXT_PUBLIC_USE_MOCK=false \
+            -t ${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:${{ steps.meta.outputs.version }} \
+            -t ${{ env.REGISTRY }}/${{ steps.lowercase.outputs.owner }}/sentorya-frontend:latest \
             -f front/Dockerfile \
             ./front
 
